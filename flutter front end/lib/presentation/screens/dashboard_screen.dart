@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../widgets/dashboard/action_buttons.dart';
-import '../../widgets/dashboard/notification_section.dart';
-import '../../widgets/dashboard/sensor_grid_section.dart';
-import '../../widgets/dashboard/status_section.dart';
+import '../widgets/dashboard/action_buttons.dart';
+import '../widgets/dashboard/notification_section.dart';
+import '../widgets/dashboard/sensor_grid_section.dart';
+import '../widgets/dashboard/status_section.dart';
+import 'notifications_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -22,7 +23,12 @@ class DashboardScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.notifications_none_outlined),
             onPressed: () {
-              // TODO: Implementasi aksi untuk membuka notifikasi
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsPage(),
+                ),
+              );
             },
           ),
         ],

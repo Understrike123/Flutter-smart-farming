@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  // Mencegah kelas ini diinstansiasi secara tidak sengaja
   AppTheme._();
 
   static final ThemeData lightTheme = ThemeData(
     primarySwatch: Colors.green,
+    // Menggunakan warna dari ColorScheme untuk konsistensi
+    colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green).copyWith(
+      secondary: const Color(0xFF5E8C61),
+      background: const Color(0xFFF0F4F0),
+    ),
     scaffoldBackgroundColor: const Color(0xFFF0F4F0),
-    fontFamily: 'Poppins',
+    fontFamily: 'Poppins', // Pastikan font ini ada di pubspec.yaml
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF5E8C61),
       elevation: 0,
@@ -18,7 +24,7 @@ class AppTheme {
         fontFamily: 'Poppins',
       ),
     ),
-    // Menambahkan tema untuk input decoration
+    // Tema default untuk semua input field di aplikasi
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white,
@@ -37,8 +43,5 @@ class AppTheme {
         borderSide: const BorderSide(color: Color(0xFF5E8C61), width: 2.0),
       ),
     ),
-    colorScheme: ColorScheme.fromSwatch(
-      primarySwatch: Colors.green,
-    ).copyWith(secondary: const Color(0xFF5E8C61)),
   );
 }

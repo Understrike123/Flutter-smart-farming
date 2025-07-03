@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/shared/status_chip.dart';
+import '../shared/status_chip.dart';
 
 class StatusSection extends StatelessWidget {
   const StatusSection({super.key});

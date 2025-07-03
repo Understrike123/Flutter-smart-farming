@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../app/screens/sensor_detail_screen.dart';
+import '../../screens/sensor_detail_screen.dart';
 
-import '../../widgets/shared/sensor_card.dart';
+import '../shared/sensor_card.dart';
 
 class SensorGridSection extends StatelessWidget {
   const SensorGridSection({super.key});

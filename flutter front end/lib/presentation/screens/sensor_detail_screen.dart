@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../widgets/sensor_detail/detailed_stats_section.dart';
-import '../../widgets/sensor_detail/historical_chart_section.dart';
-import '../../widgets/sensor_detail/sensor_selector.dart';
+import '../widgets/sensor_detail/detailed_stats_section.dart';
+import '../widgets/sensor_detail/historical_chart_section.dart';
+import '../widgets/sensor_detail/sensor_selector.dart';
 
 class SensorDetailScreen extends StatelessWidget {
   const SensorDetailScreen({super.key});
@@ -20,7 +20,7 @@ class SensorDetailScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               SensorSelector(),
               SizedBox(height: 24),
               HistoricalChartSection(),
