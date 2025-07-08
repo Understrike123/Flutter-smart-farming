@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_smarthome/domain/entities/sensor.dart';
 
 class DetailedStatsSection extends StatelessWidget {
-  const DetailedStatsSection({super.key});
+  const DetailedStatsSection({super.key, required Sensor sensor});
 
   @override
   Widget build(BuildContext context) {

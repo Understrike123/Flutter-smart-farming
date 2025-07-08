@@ -1,79 +1,61 @@
 import 'package:flutter/material.dart';
-import '../../screens/sensor_detail_screen.dart';
-
+import 'package:provider/provider.dart';
+import 'package:flutter_smarthome/presentation/providers/sensor_provider.dart';
+import 'package:flutter_smarthome/presentation/screens/sensor_detail_screen.dart';
 import '../shared/sensor_card.dart';
 
-class SensorGridSection extends StatelessWidget {
+class SensorGridSection extends StatefulWidget {
   const SensorGridSection({super.key});
 
   @override
+  State<SensorGridSection> createState() => _SensorGridSectionState();
+}
+
+class _SensorGridSectionState extends State<SensorGridSection> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<SensorProvider>(context, listen: false).fetchSensors();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      childAspectRatio:
-          1.1, // Sedikit penyesuaian untuk tampilan yang lebih baik
-      children: [
-        SensorCard(
-          iconPath: 'assets/icons/plant.png', // Ganti dengan path icon Anda
-          value: '68%',
-          label: 'Normal',
-          iconColor: const Color(0xFF5E8C61),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SensorDetailScreen(),
-              ),
+    return Consumer<SensorProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoadingSensors) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.1,
+          ),
+          itemCount: provider.sensors.length,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final sensor = provider.sensors[index];
+            return SensorCard(
+              iconPath: sensor.iconPath,
+              value: sensor.value + sensor.unit,
+              label: sensor.statusLabel,
+              iconColor: sensor.color,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SensorDetailScreen(sensor: sensor),
+                  ),
+                );
+              },
             );
           },
-        ),
-        SensorCard(
-          iconPath: 'assets/icons/temperature.png',
-          value: '29°C',
-          label: 'Ideal',
-          iconColor: Colors.orange,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SensorDetailScreen(),
-              ),
-            );
-          },
-        ),
-        SensorCard(
-          iconPath: 'assets/icons/cloud.png',
-          value: '78%',
-          label: 'Baik',
-          iconColor: Colors.blue,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SensorDetailScreen(),
-              ),
-            );
-          },
-        ),
-        SensorCard(
-          iconPath: 'assets/icons/leaf.png',
-          value: '9.200 Lux',
-          label: 'Cukup',
-          iconColor: Colors.amber,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SensorDetailScreen(),
-              ),
-            );
-          },
-        ),
-      ],
+        );
+      },
     );
   }
 }
