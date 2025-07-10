@@ -22,7 +22,7 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              // HAPUS 'const' DARI SINI KARENA LOGINFORM BUKAN CONSTANT
+
               children: [LoginHeader(), SizedBox(height: 48), LoginForm()],
             ),
           ),

@@ -22,6 +22,11 @@ import 'domain/usecases/get_sensor_history.dart';
 import 'package:flutter_smarthome/domain/usecases/get_sensor.dart';
 import 'presentation/providers/sensor_provider.dart';
 
+import 'data/repositories/settings_repository_impl.dart';
+import 'domain/usecases/get_settings.dart';
+import 'domain/usecases/update_settings.dart';
+import 'presentation/providers/settings_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
@@ -29,6 +34,7 @@ void main() async {
   // siapkan SharedPreferences atau local storage jika perlu
   final preferences = await SharedPreferences.getInstance();
 
+  final prefs = await SharedPreferences.getInstance();
   // Set orientasi layar ke portrait saja
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -68,6 +74,15 @@ void main() async {
             return SensorProvider(
               getSensors: GetSensor(repo),
               getSensorHistory: GetSensorHistory(repo),
+            );
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final repo = SettingsRepositoryImpl(sharedPreferences: prefs);
+            return SettingsProvider(
+              getSettings: GetSettings(repo),
+              updateSettings: UpdateSettings(repo),
             );
           },
         ),
