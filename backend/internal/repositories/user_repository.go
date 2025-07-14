@@ -3,7 +3,7 @@ package repositories
 
 import (
 	"database/sql"
-	"smart_farming_backend/internal/models"
+	"flutter-smart-farming/backend/internal/models"
 )
 
 // UserRepository adalah interface yang mendefinisikan operasi database untuk user.

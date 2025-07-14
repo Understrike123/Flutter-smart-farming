@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"smart_farming_backend/internal/services"
+	"flutter-smart-farming/backend/internal/services"
 )
 
 // UserHandler menangani request HTTP yang berhubungan dengan user.
@@ -19,26 +19,37 @@ func NewUserHandler(s services.UserService) *UserHandler {
 	return &UserHandler{userService: s}
 }
 
-// RegisterRequest adalah DTO (Data Transfer Object) untuk request registrasi.
+// --- DTOs (Data Transfer Objects) ---
+
 type RegisterRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=6"`
 }
 
-// UserResponse adalah DTO untuk response data user.
-// Pastikan tipe data field di sini cocok dengan tipe data yang akan diisi.
+// PERBAIKAN: Menambahkan definisi untuk LoginRequest
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
 type UserResponse struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
-	CreatedAt time.Time `json:"created_at"` // Tipe data di sini adalah time.Time
+	CreatedAt time.Time `json:"created_at"`
 }
 
-// ErrorResponse adalah DTO untuk response error.
+// PERBAIKAN: Menambahkan definisi untuk LoginResponse
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
+
+// --- Handlers ---
 
 // RegisterUser menghandle endpoint untuk registrasi user baru.
 func (h *UserHandler) RegisterUser(c *gin.Context) {
@@ -54,8 +65,6 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	// Membuat response dengan tipe data yang benar.
-	// user.CreatedAt (time.Time) dimasukkan ke field CreatedAt (time.Time).
 	response := UserResponse{
 		ID:        user.ID,
 		Name:      user.Name,
@@ -64,4 +73,21 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, response)
+}
+
+// Login menghandle endpoint untuk proses login.
+func (h *UserHandler) Login(c *gin.Context) {
+	var req LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Input tidak valid: " + err.Error()})
+		return
+	}
+
+	token, err := h.userService.Login(req.Email, req.Password)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, LoginResponse{Token: token})
 }

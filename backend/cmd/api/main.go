@@ -4,10 +4,10 @@ package main
 import (
 	"log"
 	"os"
-	"smart_farming_backend/internal/config"
-	"smart_farming_backend/internal/handlers"
-	"smart_farming_backend/internal/repositories"
-	"smart_farming_backend/internal/services"
+	"flutter-smart-farming/backend/internal/config"
+	"flutter-smart-farming/backend/internal/handlers"
+	"flutter-smart-farming/backend/internal/repositories"
+	"flutter-smart-farming/backend/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +25,6 @@ func main() {
 	log.Println("INFO: Berhasil terhubung ke database.")
 
 	// 3. Inisialisasi semua lapisan (dependency injection)
-	// Repository -> Service -> Handler
 	userRepo := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
@@ -38,9 +37,8 @@ func main() {
 	{
 		users := api.Group("/users")
 		{
-			// Pastikan tidak ada karakter aneh atau salah ketik di baris ini
 			users.POST("/register", userHandler.RegisterUser)
-			// Tambahkan endpoint lain di sini (login, get profile, dll)
+			users.POST("/login", userHandler.Login) // Endpoint baru untuk login
 		}
 	}
 
