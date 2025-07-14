@@ -5,6 +5,8 @@ import '../repositories/sensor_repository.dart';
 
 class GetSensorHistory {
   final SensorRepository repository;
+
+  // konstraktor
   GetSensorHistory(this.repository);
 
   Future<Either<Failure, List<SensorHistory>>> call(String sensorId) {

@@ -4,6 +4,7 @@ import '../widgets/dashboard/notification_section.dart';
 import '../widgets/dashboard/sensor_grid_section.dart';
 import '../widgets/dashboard/status_section.dart';
 import 'notifications_screen.dart';
+import '../screens/settings_page.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -15,7 +16,10 @@ class DashboardScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            // TODO: Implementasi aksi untuk membuka menu drawer
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsPage()),
+            );
           },
         ),
         title: const Text('Dashboard Kebun Alpukat'),
