@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_smarthome/data/datasources/auth_local_data.dart';
 import 'package:flutter_smarthome/data/repositories/auth_repository_impl.dart';
 import 'package:flutter_smarthome/domain/usecases/login_user.dart';
+import 'package:flutter_smarthome/domain/usecases/logout_user.dart';
 import 'package:flutter_smarthome/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,13 +27,14 @@ import 'data/repositories/settings_repository_impl.dart';
 import 'domain/usecases/get_settings.dart';
 import 'domain/usecases/update_settings.dart';
 import 'presentation/providers/settings_provider.dart';
+import 'domain/usecases/logout_user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
 
   // siapkan SharedPreferences atau local storage jika perlu
-  final preferences = await SharedPreferences.getInstance();
+  // final preferences = await SharedPreferences.getInstance();
 
   final prefs = await SharedPreferences.getInstance();
   // Set orientasi layar ke portrait saja
@@ -49,15 +51,18 @@ void main() async {
           create: (context) => ActuatorProvider(ActuatorRepositoryImpl()),
         ),
         ChangeNotifierProvider(
-          create: (context) => AuthProvider(
-            loginUser: LoginUser(
-              AuthRepositoryImpl(
-                localDataSource: AuthLocalDataImpl(
-                  sharedPreferences: preferences,
-                ),
-              ),
-            ),
-          ),
+          create: (context) {
+            // Buat instance dari semua dependensi
+            final localDataSource = AuthLocalDataImpl(sharedPreferences: prefs);
+            final authRepo = AuthRepositoryImpl(
+              localDataSource: localDataSource,
+            );
+
+            return AuthProvider(
+              loginUser: LoginUser(authRepo),
+              logoutUser: LogoutUser(authRepo), // Suntikkan use case logout
+            );
+          },
         ),
         ChangeNotifierProvider(
           create: (context) {

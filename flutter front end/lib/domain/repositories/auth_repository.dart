@@ -7,6 +7,6 @@ abstract class AuthRepository {
   // akan mengembalikan Failure (kiri) atau User (kanan)
   Future<Either<Failure, User>> login(String email, String password);
 
-  // Nanti bisa ditambahkan:
-  // Future<void> logout();
+  // kontrak untuk logout
+  Future<Either<Failure, void>> logout();
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+import '../providers/auth_provider.dart';
+import '../screens/login_screen.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,6 +18,49 @@ class _SettingsPageState extends State<SettingsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<SettingsProvider>(context, listen: false).loadSettings();
     });
+  }
+
+  // FUNGSI BARU: Untuk menampilkan dialog konfirmasi logout
+  Future<void> _showLogoutConfirmationDialog(BuildContext context) async {
+    // 'context.read' digunakan di sini untuk memanggil method provider
+    // tanpa perlu mendengarkan perubahannya.
+    final authProvider = context.read<AuthProvider>();
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Keluar'),
+          content: const Text('Apakah Anda yakin ingin keluar dari akun ini?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Batal'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Tutup dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Keluar', style: TextStyle(color: Colors.red)),
+              onPressed: () async {
+                // 1. Panggil method logout dari provider
+                await authProvider.logout();
+
+                // 2. Cek apakah widget masih ada di pohon widget sebelum navigasi
+                if (mounted) {
+                  // 3. Navigasi ke halaman login dan hapus semua halaman sebelumnya
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                    (Route<dynamic> route) => false,
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -60,7 +105,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 divisions: 4,
                 label: '${settings.soilMoistureThreshold.toStringAsFixed(0)}%',
                 onChanged: (value) {
-                  // Panggil update saat slider selesai digeser
                   provider.updateThresholdSetting(value);
                 },
               ),
@@ -82,14 +126,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   /* TODO: Navigasi ke halaman ubah kata sandi */
                 },
               ),
+              // BAGIAN YANG DIPERBARUI
               ListTile(
                 leading: Icon(Icons.logout, color: Colors.red.shade700),
                 title: Text(
-                  'Sign Out',
+                  'Keluar', // Mengganti 'Sign Out' agar konsisten
                   style: TextStyle(color: Colors.red.shade700),
                 ),
                 onTap: () {
-                  /* TODO: Logika untuk logout */
+                  // Panggil dialog konfirmasi saat tombol di-tap
+                  _showLogoutConfirmationDialog(context);
                 },
               ),
             ],

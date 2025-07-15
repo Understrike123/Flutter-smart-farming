@@ -30,4 +30,14 @@ class AuthRepositoryImpl implements AuthRepository {
       return const Left(ServerFailure('Email atau password salah'));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> logout() async {
+    try {
+      await localDataSource.clearAuthtoken();
+      return const Right(null);
+    } catch (error) {
+      return const Left(ServerFailure('Gagal Sign Out'));
+    }
+  }
 }
