@@ -1,22 +1,19 @@
-// cmd/api/main.go
 package main
 
 import (
 	"log"
 	"os"
-	"smart_farming_backend/internal/config"
-	"smart_farming_backend/internal/handlers"
-	"smart_farming_backend/internal/repositories"
-	"smart_farming_backend/internal/services"
+	"flutter-smart-farming/backend/internal/config"
+	"flutter-smart-farming/backend/internal/handlers"
+	"flutter-smart-farming/backend/internal/middleware"
+	"flutter-smart-farming/backend/internal/repositories"
+	"flutter-smart-farming/backend/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// 1. Muat environment variables dari .env
 	config.LoadEnv()
-
-	// 2. Hubungkan ke database
 	db, err := config.ConnectDatabase()
 	if err != nil {
 		log.Fatalf("FATAL: Gagal terhubung ke database: %v", err)
@@ -24,34 +21,49 @@ func main() {
 	defer db.Close()
 	log.Println("INFO: Berhasil terhubung ke database.")
 
-	// 3. Inisialisasi semua lapisan (dependency injection)
-	// Repository -> Service -> Handler
+	// --- Inisialisasi semua dependencies ---
 	userRepo := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
-	// 4. Setup router menggunakan Gin
+	sensorRepo := repositories.NewSensorRepository(db)
+	sensorService := services.NewSensorService(sensorRepo)
+	sensorHandler := handlers.NewSensorHandler(sensorService)
+	
+	// (Inisialisasi untuk actuator, dashboard, dll. akan ditambahkan di sini nanti)
+
+	// --- Setup Router ---
 	router := gin.Default()
 
-	// Grouping routes
 	api := router.Group("/api/v1")
 	{
-		users := api.Group("/users")
+		// Grup untuk Auth (tidak perlu token)
+		auth := api.Group("/auth")
 		{
-			// Pastikan tidak ada karakter aneh atau salah ketik di baris ini
-			users.POST("/register", userHandler.RegisterUser)
-			// Tambahkan endpoint lain di sini (login, get profile, dll)
+			auth.POST("/register", userHandler.RegisterUser)
+			auth.POST("/login", userHandler.Login)
+		}
+
+		// Grup untuk endpoint yang terproteksi
+		protected := api.Group("/")
+		protected.Use(middleware.AuthMiddleware()) // Terapkan middleware di sini
+		{
+			// Rute untuk Sensor
+			sensors := protected.Group("/sensors")
+			{
+				sensors.GET("", sensorHandler.GetSensors) // Mengganti "/" menjadi ""
+				sensors.GET("/:sensor_id/readings", sensorHandler.GetSensorReadings)
+				sensors.GET("/:sensor_id/history", sensorHandler.GetSensorHistory) // <-- Rute baru
+			}
+
+			// (Rute untuk Aktuator, Dashboard, dll. akan ditambahkan di sini nanti)
 		}
 	}
 
-	// 5. Jalankan server
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
-		port = "8080" // Default port
+		port = "8080"
 	}
-
 	log.Printf("INFO: Server berjalan di http://localhost:%s", port)
-	if err := router.Run(":" + port); err != nil {
-		log.Fatalf("FATAL: Gagal menjalankan server: %v", err)
-	}
+	router.Run(":" + port)
 }

@@ -3,9 +3,15 @@ package models
 
 import "time"
 
-type SensorData struct {
-    ID        int       `json:"id"`
-    Type      string    `json:"type"`      // Contoh: "temperature", "humidity"
-    Value     float64   `json:"value"`     // Nilai sensor
-    Timestamp time.Time `json:"timestamp"` // Waktu pengambilan data
+type Sensor struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type SensorReading struct {
+	ID        int       `json:"id"`
+	SensorID  int       `json:"sensor_id"`
+	Value     float64   `json:"value"`
+	Timestamp time.Time `json:"timestamp"`
 }
