@@ -28,6 +28,8 @@ import 'domain/usecases/get_settings.dart';
 import 'domain/usecases/update_settings.dart';
 import 'presentation/providers/settings_provider.dart';
 import 'domain/usecases/logout_user.dart';
+import 'package:http/http.dart' as http;
+import 'data/datasources/auth_remote_data_sources.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,8 +56,12 @@ void main() async {
           create: (context) {
             // Buat instance dari semua dependensi
             final localDataSource = AuthLocalDataImpl(sharedPreferences: prefs);
+            final remoteDataSource = AuthRemoteDataSourcesImpl(
+              client: http.Client(),
+            );
             final authRepo = AuthRepositoryImpl(
               localDataSource: localDataSource,
+              remoteDataSource: remoteDataSource,
             );
 
             return AuthProvider(

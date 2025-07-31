@@ -1,4 +1,6 @@
 import 'package:either_dart/either.dart';
+import 'package:flutter_smarthome/data/datasources/auth_remote_data_sources.dart';
+import 'package:flutter_smarthome/data/repositories/error_exceptions.dart';
 import '../../domain/entities/user.dart';
 import '../repositories/data_failure_repository.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -6,28 +8,25 @@ import '../datasources/auth_local_data.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthLocalData localDataSource;
+  final AuthRemoteDataSource remoteDataSource;
 
-  AuthRepositoryImpl({required this.localDataSource});
+  AuthRepositoryImpl({
+    required this.localDataSource,
+    required this.remoteDataSource,
+  });
 
   @override
   Future<Either<Failure, User>> login(String email, String password) async {
-    await Future.delayed(
-      const Duration(seconds: 1),
-    ); // Simulasi delay untuk proses login
+    try {
+      final user = await remoteDataSource.login(email, password);
 
-    if (email == 'admin@gmail.com' && password == 'admin') {
-      final user = User(
-        id: 'user-123',
-        name: 'Admin Febrian Fritz',
-        email: email,
-        token: 'dummy-jwt-token-xyz',
+      await localDataSource.saveAuthToken((user.token));
+
+      return Right(user);
+    } on ServerException {
+      return const Left(
+        ServerFailure('Email atau password salah. Silahkan coba lagi.'),
       );
-      // Simpan token ke local storage
-      await localDataSource.saveAuthToken(user.token);
-      return Right(user); // Kembalikan user jika login sukses
-    } else {
-      // mengembalikan kegagalan jika email atau password salah
-      return const Left(ServerFailure('Email atau password salah'));
     }
   }
 

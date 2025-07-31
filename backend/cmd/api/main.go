@@ -1,14 +1,15 @@
 package main
 
 import (
-	"log"
-	"os"
 	"flutter-smart-farming/backend/internal/config"
 	"flutter-smart-farming/backend/internal/handlers"
 	"flutter-smart-farming/backend/internal/middleware"
 	"flutter-smart-farming/backend/internal/repositories"
 	"flutter-smart-farming/backend/internal/services"
+	"log"
+	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,6 +35,12 @@ func main() {
 
 	// --- Setup Router ---
 	router := gin.Default()
+
+	// konfigurasi CORS ORIGIN ke aplikasi flutter
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Content-Type", "Authorization"}
+	router.Use(cors.New(config))
 
 	api := router.Group("/api/v1")
 	{
