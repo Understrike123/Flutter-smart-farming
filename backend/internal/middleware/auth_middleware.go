@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -15,6 +16,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 1. Ambil header Authorization
 		authHeader := c.GetHeader("Authorization")
+		log.Println("DEBUG: Menerima Authorization Header:", authHeader)
 		if authHeader == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header dibutuhkan"})
 			return
@@ -26,9 +28,14 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Format header Authorization salah, harus 'Bearer <token>'"})
 			return
 		}
+		
 
 		tokenString := parts[1]
 		secretKey := []byte(os.Getenv("JWT_SECRET_KEY"))
+		if len(secretKey) == 0 {
+			log.Println("FATAL: JWT_SECRET_KEY tidak diatur di environment variable!")
+		}
+		log.Println("DEBUG: Mencoba memvalidasi token:", tokenString)
 
 		// 3. Parse dan validasi token
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -43,9 +50,15 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token tidak valid: " + err.Error()})
 			return
 		}
+		if err != nil {
+			log.Println("ERROR: Gagal mem-parse token:", err.Error())
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Token tidak valid: " + err.Error()})
+			return
+		}
 
 		// 4. Jika token valid, simpan claims ke dalam context
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			log.Println("INFO: Token valid. User ID dari klaim:", claims["user_id"])
 			// Simpan user_id di context agar bisa digunakan oleh handler selanjutnya
 			c.Set("user_id", claims["user_id"])
 		} else {

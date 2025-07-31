@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smarthome/data/datasources/auth_local_data.dart';
+import 'package:flutter_smarthome/data/datasources/sensor_remote_data_source.dart';
 import 'package:flutter_smarthome/data/repositories/auth_repository_impl.dart';
 import 'package:flutter_smarthome/domain/usecases/login_user.dart';
 import 'package:flutter_smarthome/domain/usecases/logout_user.dart';
@@ -30,6 +31,8 @@ import 'presentation/providers/settings_provider.dart';
 import 'domain/usecases/logout_user.dart';
 import 'package:http/http.dart' as http;
 import 'data/datasources/auth_remote_data_sources.dart';
+import 'data/repositories/sensor_repository_impl.dart';
+import 'data/datasources/sensor_remote_data_source.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,7 +84,13 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) {
-            final repo = SensorRepositoryImpl();
+            final remoteDataSource = SensorRemoteDatasourceImpl(
+              client: http.Client(),
+              sharedPreferences: prefs,
+            );
+            final repo = SensorRepositoryImpl(
+              remoteDataSource: remoteDataSource,
+            );
             return SensorProvider(
               getSensors: GetSensor(repo),
               getSensorHistory: GetSensorHistory(repo),

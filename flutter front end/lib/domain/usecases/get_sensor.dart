@@ -8,6 +8,6 @@ class GetSensor {
   GetSensor(this.repository);
 
   Future<Either<Failure, List<Sensor>>> call() {
-    return repository.getSensor();
+    return repository.getSensors();
   }
 }

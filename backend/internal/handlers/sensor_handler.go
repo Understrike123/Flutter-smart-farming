@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"flutter-smart-farming/backend/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SensorHandler struct {
@@ -19,6 +21,16 @@ func NewSensorHandler(s services.SensorService) *SensorHandler {
 
 // GET /sensors
 func (h *SensorHandler) GetSensors(c *gin.Context) {
+	log.Println("INFO: Masuk ke handler GetSensors.")
+    userID, exists := c.Get("user_id")
+    if !exists {
+        log.Println("ERROR: Gagal mendapatkan user_id dari context di GetSensors.")
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Sesuatu terjadi di server"})
+        return
+    }
+    log.Printf("INFO: GetSensors dipanggil oleh user_id: %v", userID)
+    // -----------------------------
+
 	sensors, err := h.service.GetAllSensors()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
