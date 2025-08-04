@@ -24,13 +24,13 @@ class ActuatorRepositoryImpl implements ActuatorRepository {
   }
 
   @override
-  void updateActuatorStatus(String title, ActuaratorStatus newStatus) {
+  void updateActuatorStatus(String title, ActuatorStatus newStatus) {
     // NANTI: Ganti ini dengan panggilan API
     // Contoh: remoteDataSource.updateStatus(title, newStatus);
     try {
       final actuator = _actuators.firstWhere((act) => act.title == title);
       actuator.status = newStatus;
-      actuator.mode = (newStatus == ActuaratorStatus.aktif)
+      actuator.mode = (newStatus == ActuatorStatus.aktif)
           ? "MANUAL"
           : "OTOMATIS";
     } catch (e) {

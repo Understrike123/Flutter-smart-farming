@@ -2,8 +2,9 @@ package repositories
 
 import (
 	"database/sql"
-	"time"
 	"flutter-smart-farming/backend/internal/models"
+	"log"
+	"time"
 )
 
 type SensorRepository interface {
@@ -22,21 +23,30 @@ func NewSensorRepository(db *sql.DB) SensorRepository {
 
 // FindAll mengambil semua sensor yang terdaftar dari database.
 func (r *sensorRepository) FindAll() ([]models.Sensor, error) {
+	log.Println("DEBUG: Masuk ke repository FindAll.")
 	query := "SELECT id, name, type FROM sensors"
 	rows, err := r.db.Query(query)
 	if err != nil {
+		log.Printf("ERROR: Gagal saat menjalankan db.Query: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
 
 	var sensors []models.Sensor
+	log.Println("DEBUG: Query berhasil, memulai iterasi baris...")
+
 	for rows.Next() {
 		var sensor models.Sensor
+		log.Println("DEBUG: Membaca baris baru...")
+
 		if err := rows.Scan(&sensor.ID, &sensor.Name, &sensor.Type); err != nil {
+			log.Printf("ERROR: Gagal saat rows.Scan: %v", err)
 			return nil, err
 		}
+		log.Printf("DEBUG: Baris berhasil di-scan: ID=%d, Name=%s", sensor.ID, sensor.Name)
 		sensors = append(sensors, sensor)
 	}
+	log.Println("DEBUG: Selesai iterasi, mengembalikan data sensor.")
 	return sensors, nil
 }
 

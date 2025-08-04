@@ -5,7 +5,7 @@ import '../../../domain/entities/actuator.dart'; // Import model dari domain
 class ActuatorCard extends StatelessWidget {
   // 2. Ia menerima data lengkap dan sebuah fungsi dari induknya.
   final Actuator actuatorData;
-  final Function(ActuaratorStatus) onStatusChanged;
+  final Function(ActuatorStatus) onStatusChanged;
 
   const ActuatorCard({
     super.key,
@@ -16,7 +16,7 @@ class ActuatorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 3. Semua data sekarang diambil dari 'actuatorData'.
-    final bool isAktif = actuatorData.status == ActuaratorStatus.aktif;
+    final bool isAktif = actuatorData.status == ActuatorStatus.aktif;
     final primaryColor = Theme.of(context).primaryColor;
 
     return Card(
@@ -82,7 +82,7 @@ class ActuatorCard extends StatelessWidget {
                 : const Icon(Icons.power_settings_new, size: 20),
             label: const Text('AKTIFKAN'),
             // 4. Saat ditekan, ia memanggil fungsi 'onStatusChanged' dari induknya.
-            onPressed: () => onStatusChanged(ActuaratorStatus.aktif),
+            onPressed: () => onStatusChanged(ActuatorStatus.aktif),
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: Theme.of(context).primaryColor,
@@ -97,7 +97,7 @@ class ActuatorCard extends StatelessWidget {
           child: OutlinedButton.icon(
             icon: const Icon(Icons.cancel_outlined, size: 20),
             label: const Text('NONAKTIFKAN'),
-            onPressed: () => onStatusChanged(ActuaratorStatus.nonaktif),
+            onPressed: () => onStatusChanged(ActuatorStatus.nonaktif),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.grey.shade700,
               side: BorderSide(color: Colors.grey.shade300),

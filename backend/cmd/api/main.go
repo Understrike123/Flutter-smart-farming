@@ -32,6 +32,13 @@ func main() {
 	sensorHandler := handlers.NewSensorHandler(sensorService)
 	
 	// (Inisialisasi untuk actuator, dashboard, dll. akan ditambahkan di sini nanti)
+	// Inisialisasi untuk Actuator dan Notifikasi
+	actuatorRepo := repositories.NewActuatorRepository(db)
+	notificationRepo := repositories.NewNotificationRepository(db)
+
+	// Inisialisasi untuk Dashboard
+	dashboardService := services.NewDashboardService(sensorRepo, actuatorRepo, notificationRepo)
+	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
 
 	// --- Setup Router ---
 	router := gin.Default()
@@ -55,6 +62,7 @@ func main() {
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware()) // Terapkan middleware di sini
 		{
+			protected.GET("/dashboard", dashboardHandler.GetDashboardSummary)
 			// Rute untuk Sensor
 			sensors := protected.Group("/sensors")
 			{

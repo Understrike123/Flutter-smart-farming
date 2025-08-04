@@ -44,7 +44,7 @@ class _ActuatorControlScreenState extends State<ActuatorControlScreen> {
                 child: ActuatorCard(
                   actuatorData: actuator,
                   // 5. Teruskan fungsi untuk mengubah status ke Provider
-                  onStatusChanged: (ActuaratorStatus newStatus) {
+                  onStatusChanged: (ActuatorStatus newStatus) {
                     actuatorProvider.updateActuatorStatus(
                       actuator.title,
                       newStatus,

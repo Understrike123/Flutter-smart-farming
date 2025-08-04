@@ -7,5 +7,5 @@ abstract class ActuatorRepository {
   List<Actuator> getActuators();
 
   // kontrak untuk mengubah status aktuator
-  void updateActuatorStatus(String title, ActuaratorStatus newStatus);
+  void updateActuatorStatus(String title, ActuatorStatus newStatus);
 }

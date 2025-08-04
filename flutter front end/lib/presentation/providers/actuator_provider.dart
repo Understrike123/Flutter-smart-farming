@@ -18,7 +18,7 @@ class ActuatorProvider with ChangeNotifier {
   }
 
   // Method untuk mengubah status
-  void updateActuatorStatus(String title, ActuaratorStatus newStatus) {
+  void updateActuatorStatus(String title, ActuatorStatus newStatus) {
     _actuatorRepository.updateActuatorStatus(title, newStatus);
     // Kita panggil lagi loadActuators untuk mendapatkan data terbaru
     loadActuators();

@@ -34,6 +34,11 @@ import 'data/datasources/auth_remote_data_sources.dart';
 import 'data/repositories/sensor_repository_impl.dart';
 import 'data/datasources/sensor_remote_data_source.dart';
 
+import 'data/datasources/dashboard_remote_data_source.dart';
+import 'data/repositories/dashboard_repository_impl.dart';
+import 'domain/usecases/get_dashboard_summary.dart';
+import 'presentation/providers/dashboard_provider.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
@@ -103,6 +108,20 @@ void main() async {
             return SettingsProvider(
               getSettings: GetSettings(repo),
               updateSettings: UpdateSettings(repo),
+            );
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final remoteDataSource = DashboardRemoteDataSourceImpl(
+              client: http.Client(),
+              sharedPreferences: prefs,
+            );
+            final repo = DashboardRepositoryImpl(
+              remoteDataSource: remoteDataSource,
+            );
+            return DashboardProvider(
+              getDashboardSummary: GetDashboardSummary(repo),
             );
           },
         ),
