@@ -4,7 +4,7 @@ import '../../domain/repositories/notification_repository.dart';
 class NotificationRepositoryImpl implements NotificationRepository {
   final List<AppNotification> _notifications = [
     AppNotification(
-      id: '1',
+      id: 1,
       title: 'Kelembaban Tanah Rendah',
       subtitle: 'Zona 2 - Perlu Penyiraman ',
       type: NotificationType.warning,
@@ -12,14 +12,14 @@ class NotificationRepositoryImpl implements NotificationRepository {
       isRead: false,
     ),
     AppNotification(
-      id: '2',
+      id: 2,
       title: 'Suhu Udara Tinggi Terdeteksi',
       subtitle: 'Suhu mencapai 35°C',
       type: NotificationType.danger,
       timestamp: DateTime.now().subtract(Duration(days: 1, hours: 5)),
     ),
     AppNotification(
-      id: '3',
+      id: 3,
       title: 'Siklus Irigasi Selesai',
       subtitle: 'Irigasi otomatis Zona 1 telah selesai.',
       type: NotificationType.info,
@@ -27,7 +27,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       isRead: true,
     ),
     AppNotification(
-      id: '4',
+      id: 4,
       title: 'Pompa Irigasi Gagal Beroperasi',
       subtitle: 'Zona 1 - Cek koneksi pompa.',
       type: NotificationType.warning,
@@ -35,7 +35,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       isRead: true,
     ),
     AppNotification(
-      id: '5',
+      id: 5,
       title: 'Pupuk Cair Hampir Habis',
       subtitle: 'Sisa pupuk cair tinggal 15%.',
       type: NotificationType.info,
@@ -53,7 +53,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<void> markAsRead(String notificationId) async {
+  Future<void> markAsRead(int notificationId) async {
     await Future.delayed(const Duration(milliseconds: 200));
     final index = _notifications.indexWhere((n) => n.id == notificationId);
     if (index != -1) {

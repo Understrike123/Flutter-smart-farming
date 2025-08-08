@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smarthome/domain/entities/sensor.dart';
 
 class DetailedStatsSection extends StatelessWidget {
-  const DetailedStatsSection({super.key, required Sensor sensor});
+  // Terima objek Sensor dari luar
+  final Sensor sensor;
+
+  const DetailedStatsSection({super.key, required this.sensor});
 
   @override
   Widget build(BuildContext context) {
@@ -19,20 +22,32 @@ class DetailedStatsSection extends StatelessWidget {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            _buildStatRow('Nilai Saat Ini', '68%'),
+            // Gunakan data dari objek sensor
+            _buildStatRow('Nilai Saat Ini', '${sensor.value}${sensor.unit}'),
             const Divider(height: 24),
-            _buildStatRow('Rata-rata', '62%'),
+            _buildStatRow(
+              'Rata-rata',
+              '${sensor.average.toStringAsFixed(1)}${sensor.unit}',
+            ),
             const Divider(height: 24),
-            _buildStatRow('Minimum', '35%', subtitle: 'Kemarin, 14.30 WIB'),
+            _buildStatRow(
+              'Minimum',
+              '${sensor.min.toStringAsFixed(1)}${sensor.unit}',
+              subtitle: 'Dalam 24 jam terakhir',
+            ),
             const Divider(height: 24),
-            _buildStatRow('Maksimum', '80%', subtitle: '(Hari Ini, 07.00 WIB)'),
+            _buildStatRow(
+              'Maksimum',
+              '${sensor.max.toStringAsFixed(1)}${sensor.unit}',
+              subtitle: 'Dalam 24 jam terakhir',
+            ),
           ],
         ),
       ),
     );
   }
 
-  // Helper widget untuk membuat satu baris statistik agar tidak duplikasi kode
+  // Helper widget untuk membuat satu baris statistik
   Widget _buildStatRow(String label, String value, {String? subtitle}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -5,7 +5,5 @@ import '../entities/sensor_history.dart';
 
 abstract class SensorRepository {
   Future<Either<Failure, List<Sensor>>> getSensors();
-  Future<Either<Failure, List<SensorHistory>>> getSensorHistory(
-    String sensorId,
-  );
+  Future<Either<Failure, List<SensorHistory>>> getSensorHistory(int sensorId);
 }

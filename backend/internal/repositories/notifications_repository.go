@@ -3,13 +3,14 @@ package repositories
 import (
 	"database/sql"
 	"flutter-smart-farming/backend/internal/models"
-	"time"
 )
 
+// metode-metode yang dibutuhkan ke dalam "kontrak" (interface)
 type NotificationRepository interface {
 	FindLatest(limit int) ([]models.AppNotification, error)
+	FindFiltered(filter string) ([]models.AppNotification, error)
+	MarkAsRead(notificationID int) error
 }
-
 type notificationRepository struct {
 	db *sql.DB
 }
@@ -18,16 +19,66 @@ func NewNotificationRepository(db *sql.DB) NotificationRepository {
 	return &notificationRepository{db: db}
 }
 
-// FindLatest mengembalikan data notifikasi dummy.
+// FindLatest mengambil notifikasi terbaru sejumlah 'limit'.
 func (r *notificationRepository) FindLatest(limit int) ([]models.AppNotification, error) {
-	// NANTI: Ganti ini dengan query database sungguhan
-	notifications := []models.AppNotification{
-		{ID: 1, Title: "Kelembaban Tanah Rendah!", Subtitle: "Zona 2 – Perlu Penyiraman Segera.", Type: "penting", Timestamp: time.Now().Add(-2 * time.Hour), IsRead: false},
-		{ID: 2, Title: "Suhu Udara Tinggi Terdeteksi", Subtitle: "Suhu mencapai 35°C di kebun.", Type: "penting", Timestamp: time.Now().Add(-29 * time.Hour), IsRead: true},
+	// Query ini mengambil notifikasi terbaru berdasarkan waktu pembuatannya.
+	query := `
+		SELECT id, title, subtitle, type, created_at, is_read 
+		FROM notifications 
+		ORDER BY created_at DESC 
+		LIMIT $1`
+
+	rows, err := r.db.Query(query, limit)
+	if err != nil {
+		return nil, err
 	}
-	// Pastikan jumlahnya tidak melebihi limit
-	if len(notifications) > limit {
-		return notifications[:limit], nil
+	defer rows.Close()
+
+	var notifications []models.AppNotification
+	for rows.Next() {
+		var n models.AppNotification
+		// Gunakan Timestamp dari model AppNotification yang bertipe time.Time
+		if err := rows.Scan(&n.ID, &n.Title, &n.Subtitle, &n.Type, &n.Timestamp, &n.IsRead); err != nil {
+			return nil, err
+		}
+		notifications = append(notifications, n)
 	}
 	return notifications, nil
+}
+
+// FindLatest mengembalikan data notifikasi dummy.
+func (r *notificationRepository) FindFiltered(filter string) ([]models.AppNotification, error) {
+	query := `SELECT id, title, subtitle, type, created_at, is_read FROM notifications`
+
+	switch filter {
+	case "penting":
+		query += ` WHERE severity = 'CRITICAL' OR severity = 'WARNING'`
+	case "belumDibaca":
+		query += ` WHERE is_read = false`
+	}
+
+	query += ` ORDER BY created_at DESC`
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notifications []models.AppNotification
+	for rows.Next() {
+		var n models.AppNotification
+		if err := rows.Scan(&n.ID, &n.Title, &n.Subtitle, &n.Type, &n.Timestamp, &n.IsRead); err != nil {
+			return nil, err
+		}
+		notifications = append(notifications, n)
+	}
+	return notifications, nil
+}
+
+// MarkAsRead menandai notifikasi sebagai sudah dibaca.
+func (r *notificationRepository) MarkAsRead(notificationID int) error {
+	query := `UPDATE notifications SET is_read = true WHERE id = $1`
+	_, err := r.db.Exec(query, notificationID)
+	return err
 }

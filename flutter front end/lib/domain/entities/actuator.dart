@@ -1,6 +1,8 @@
 enum ActuatorStatus { aktif, nonaktif }
 
 class Actuator {
+  // PERBAIKAN: Tambahkan field id dengan tipe int
+  final int id;
   final String title;
   final String iconPath;
   final bool hasAdvancedControls;
@@ -8,6 +10,7 @@ class Actuator {
   String mode;
 
   Actuator({
+    required this.id,
     required this.title,
     this.iconPath = '',
     this.hasAdvancedControls = false,
@@ -15,18 +18,16 @@ class Actuator {
     this.mode = "OTOMATIS",
   });
 
-  // TAMBAHKAN FACTORY CONSTRUCTOR INI
   factory Actuator.fromJson(Map<String, dynamic> json) {
     return Actuator(
+      // PERBAIKAN: Baca 'id' sebagai int
+      id: json['id'] ?? 0,
       title: json['name'] ?? 'Aktuator Tidak Dikenal',
-      // Logika untuk mengubah status dari string ke enum
-      status: (json['status']?.toString().toLowerCase() == 'aktif')
+      // PERBAIKAN: Gunakan 'status' boolean dari JSON
+      status: (json['status'] == true)
           ? ActuatorStatus.aktif
           : ActuatorStatus.nonaktif,
       mode: json['mode'] ?? 'OTOMATIS',
-      // Anda bisa menambahkan properti lain di JSON jika perlu
-      // iconPath: json['icon_path'],
-      // hasAdvancedControls: json['has_advanced_controls'],
     );
   }
 }

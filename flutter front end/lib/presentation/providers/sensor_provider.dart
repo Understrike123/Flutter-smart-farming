@@ -34,7 +34,7 @@ class SensorProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchSensorHistory(String sensorId) async {
+  Future<void> fetchSensorHistory(int sensorId) async {
     _isLoadingHistory = true;
     _history = [];
     notifyListeners();

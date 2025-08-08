@@ -24,7 +24,7 @@ func NewSensorRepository(db *sql.DB) SensorRepository {
 // FindAll mengambil semua sensor yang terdaftar dari database.
 func (r *sensorRepository) FindAll() ([]models.Sensor, error) {
 	log.Println("DEBUG: Masuk ke repository FindAll.")
-	query := "SELECT id, name, type FROM sensors"
+	query := "SELECT id, name, type, unit FROM sensor_data"
 	rows, err := r.db.Query(query)
 	if err != nil {
 		log.Printf("ERROR: Gagal saat menjalankan db.Query: %v", err)
@@ -37,13 +37,31 @@ func (r *sensorRepository) FindAll() ([]models.Sensor, error) {
 
 	for rows.Next() {
 		var sensor models.Sensor
-		log.Println("DEBUG: Membaca baris baru...")
-
-		if err := rows.Scan(&sensor.ID, &sensor.Name, &sensor.Type); err != nil {
-			log.Printf("ERROR: Gagal saat rows.Scan: %v", err)
+		// Tambahkan &sensor.Unit saat scan
+		if err := rows.Scan(&sensor.ID, &sensor.Name, &sensor.Type, &sensor.Unit); err != nil {
 			return nil, err
 		}
-		log.Printf("DEBUG: Baris berhasil di-scan: ID=%d, Name=%s", sensor.ID, sensor.Name)
+
+		latestReading, err := r.GetLatestReading(sensor.ID)
+		if err != nil {
+			// Jika terjadi error (selain tidak ada baris), hentikan proses
+			return nil, err
+		}
+
+		if latestReading != nil {
+			sensor.CurrentValue = latestReading.Value
+			// Logika sederhana untuk status, bisa dibuat lebih kompleks
+			if latestReading.Value > 50 {
+				sensor.Status = "Normal"
+			} else {
+				sensor.Status = "Rendah"
+			}
+		} else {
+			// Beri nilai default jika tidak ada data pembacaan
+			sensor.CurrentValue = 0
+			sensor.Status = "N/A"
+		}
+		
 		sensors = append(sensors, sensor)
 	}
 	log.Println("DEBUG: Selesai iterasi, mengembalikan data sensor.")

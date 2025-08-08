@@ -6,7 +6,8 @@ enum NotificationType {
 }
 
 class AppNotification {
-  final String id;
+  // PERBAIKAN: Ubah tipe data id dari String menjadi int
+  final int id;
   final String title;
   final String subtitle;
   final NotificationType type;
@@ -22,7 +23,6 @@ class AppNotification {
     this.isRead = false,
   });
 
-  // TAMBAHKAN FACTORY CONSTRUCTOR INI
   factory AppNotification.fromJson(Map<String, dynamic> json) {
     // Fungsi helper untuk mengubah string tipe menjadi enum
     NotificationType _parseType(String? typeStr) {
@@ -37,11 +37,11 @@ class AppNotification {
     }
 
     return AppNotification(
-      id: json['id']?.toString() ?? '',
+      // PERBAIKAN: Baca 'id' sebagai int
+      id: json['id'] ?? 0,
       title: json['title'] ?? 'Tanpa Judul',
       subtitle: json['subtitle'] ?? '',
       type: _parseType(json['type']),
-      // Parsing timestamp dari string format ISO 8601
       timestamp: DateTime.tryParse(json['timestamp'] ?? '') ?? DateTime.now(),
       isRead: json['is_read'] ?? false,
     );

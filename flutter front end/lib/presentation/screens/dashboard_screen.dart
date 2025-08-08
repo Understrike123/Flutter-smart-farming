@@ -29,7 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(/* ... AppBar tidak berubah ... */),
+      appBar: AppBar(),
       body: Consumer<DashboardProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading || provider.dashboardSummary == null) {

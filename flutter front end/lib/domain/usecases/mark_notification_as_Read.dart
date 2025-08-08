@@ -5,7 +5,7 @@ class MarkNotificationAsRead {
 
   MarkNotificationAsRead(this.repository);
 
-  Future<void> call(String notificationId) {
+  Future<void> call(int notificationId) {
     return repository.markAsRead(notificationId);
   }
 }

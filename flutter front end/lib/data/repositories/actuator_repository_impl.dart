@@ -4,16 +4,23 @@ import '../../domain/repositories/actuator_repository.dart';
 class ActuatorRepositoryImpl implements ActuatorRepository {
   final List<Actuator> _actuators = [
     Actuator(
+      id: 1,
       title: 'Sistem Irigasi Utama',
       iconPath: 'assets/icons/drop.png',
       hasAdvancedControls: true,
     ),
     Actuator(
+      id: 2,
       title: 'Pompa Pupuk Cair',
       iconPath: 'assets/icons/fertilizer.png',
     ),
-    Actuator(title: 'Sistem Pencahayaan', iconPath: 'assets/icons/lampu.png'),
     Actuator(
+      id: 3,
+      title: 'Sistem Pencahayaan',
+      iconPath: 'assets/icons/lampu.png',
+    ),
+    Actuator(
+      id: 4,
       title: 'Sistem Ventilasi',
       iconPath: 'assets/icons/ventilation.png',
     ),

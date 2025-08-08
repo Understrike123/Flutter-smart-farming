@@ -44,7 +44,7 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> markAsRead(String notificationId) async {
+  Future<void> markAsRead(int notificationId) async {
     final index = _allNotifications.indexWhere((n) => n.id == notificationId);
     if (index != -1 && !_allNotifications[index].isRead) {
       _allNotifications[index].isRead = true;

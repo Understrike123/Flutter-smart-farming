@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class Sensor {
-  final String id;
+  // PERBAIKAN: Ubah tipe data id dari String menjadi int
+  final int id;
   final String name;
   final String value;
   final String unit;
   final String statusLabel;
   final String iconPath;
   final Color color;
-
   final double average;
   final double min;
   final double max;
@@ -27,7 +27,7 @@ class Sensor {
   });
 
   factory Sensor.fromJson(Map<String, dynamic> json) {
-    // Fungsi helper untuk mengubah nilai menjadi double dengan aman
+    // PERBAIKAN: Tambahkan kembali fungsi helper 'toDouble' yang hilang
     double toDouble(dynamic value) {
       if (value is double) return value;
       if (value is int) return value.toDouble();
@@ -39,17 +39,18 @@ class Sensor {
     final stats = json['stats'] ?? {};
 
     return Sensor(
-      id: json['id'] ?? '',
+      id: json['id'] ?? 0,
       name: json['name'] ?? 'Sensor Tidak Dikenal',
+      // Gunakan kunci baru dari backend
       value: json['current_value']?.toString() ?? '0',
       unit: json['unit'] ?? '',
       statusLabel: json['status'] ?? 'N/A',
-      // Kita akan memetakan ikon dan warna secara lokal berdasarkan nama/tipe
       iconPath: _getIconPathFromName(json['name']),
       color: _getColorFromName(json['name']),
-      average: toDouble(stats['average']),
-      min: toDouble(stats['min']),
-      max: toDouble(stats['max']),
+      // Untuk statistik, kita bisa gunakan nilai default atau dari API jika ada
+      average: toDouble(json['stats']?['average']),
+      min: toDouble(json['stats']?['min']),
+      max: toDouble(json['stats']?['max']),
     );
   }
 

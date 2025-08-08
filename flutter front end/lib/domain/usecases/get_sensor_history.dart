@@ -9,7 +9,7 @@ class GetSensorHistory {
   // konstraktor
   GetSensorHistory(this.repository);
 
-  Future<Either<Failure, List<SensorHistory>>> call(String sensorId) {
+  Future<Either<Failure, List<SensorHistory>>> call(int sensorId) {
     return repository.getSensorHistory(sensorId);
   }
 }
