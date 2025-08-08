@@ -23,7 +23,7 @@ func NewNotificationRepository(db *sql.DB) NotificationRepository {
 func (r *notificationRepository) FindLatest(limit int) ([]models.AppNotification, error) {
 	// Query ini mengambil notifikasi terbaru berdasarkan waktu pembuatannya.
 	query := `
-		SELECT id, title, subtitle, type, created_at, is_read 
+		SELECT id, message, type, severity, created_at, is_read 
 		FROM notifications 
 		ORDER BY created_at DESC 
 		LIMIT $1`
@@ -37,8 +37,8 @@ func (r *notificationRepository) FindLatest(limit int) ([]models.AppNotification
 	var notifications []models.AppNotification
 	for rows.Next() {
 		var n models.AppNotification
-		// Gunakan Timestamp dari model AppNotification yang bertipe time.Time
-		if err := rows.Scan(&n.ID, &n.Title, &n.Subtitle, &n.Type, &n.Timestamp, &n.IsRead); err != nil {
+		// PERBAIKAN: Sesuaikan urutan scan
+		if err := rows.Scan(&n.ID, &n.Message, &n.Type, &n.Severity, &n.Timestamp, &n.IsRead); err != nil {
 			return nil, err
 		}
 		notifications = append(notifications, n)
@@ -48,15 +48,14 @@ func (r *notificationRepository) FindLatest(limit int) ([]models.AppNotification
 
 // FindLatest mengembalikan data notifikasi dummy.
 func (r *notificationRepository) FindFiltered(filter string) ([]models.AppNotification, error) {
-	query := `SELECT id, title, subtitle, type, created_at, is_read FROM notifications`
+	query := `SELECT id, message, type, severity, created_at, is_read FROM notifications`
 
 	switch filter {
 	case "penting":
-		query += ` WHERE severity = 'CRITICAL' OR severity = 'WARNING'`
+		query += ` WHERE severity = 'WARNING' OR severity = 'CRITICAL'`
 	case "belumDibaca":
 		query += ` WHERE is_read = false`
 	}
-
 	query += ` ORDER BY created_at DESC`
 
 	rows, err := r.db.Query(query)
@@ -68,13 +67,15 @@ func (r *notificationRepository) FindFiltered(filter string) ([]models.AppNotifi
 	var notifications []models.AppNotification
 	for rows.Next() {
 		var n models.AppNotification
-		if err := rows.Scan(&n.ID, &n.Title, &n.Subtitle, &n.Type, &n.Timestamp, &n.IsRead); err != nil {
+		// PERBAIKAN: Sesuaikan urutan scan
+		if err := rows.Scan(&n.ID, &n.Message, &n.Type, &n.Severity, &n.Timestamp, &n.IsRead); err != nil {
 			return nil, err
 		}
 		notifications = append(notifications, n)
 	}
 	return notifications, nil
 }
+
 
 // MarkAsRead menandai notifikasi sebagai sudah dibaca.
 func (r *notificationRepository) MarkAsRead(notificationID int) error {

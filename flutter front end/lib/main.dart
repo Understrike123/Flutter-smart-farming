@@ -39,6 +39,13 @@ import 'data/repositories/dashboard_repository_impl.dart';
 import 'domain/usecases/get_dashboard_summary.dart';
 import 'presentation/providers/dashboard_provider.dart';
 
+import 'data/datasources/actuator_remote_data_source.dart';
+import 'data/repositories/actuator_repository_impl.dart';
+import 'domain/usecases/get_actuators.dart';
+import 'domain/usecases/post_actuator_command.dart';
+import 'data/datasources/notification_remote_data_source.dart';
+import 'data/datasources/settings_remote_data_source.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
@@ -58,7 +65,19 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => ActuatorProvider(ActuatorRepositoryImpl()),
+          create: (context) {
+            final remoteDataSource = ActuatorRemoteDataSourceImpl(
+              client: http.Client(),
+              sharedPreferences: prefs,
+            );
+            final repo = ActuatorRepositoryImpl(
+              remoteDataSource: remoteDataSource,
+            );
+            return ActuatorProvider(
+              getActuators: GetActuators(repo),
+              postActuatorCommand: PostActuatorCommand(repo),
+            );
+          },
         ),
         ChangeNotifierProvider(
           create: (context) {
@@ -80,7 +99,15 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) {
-            final repo = NotificationRepositoryImpl();
+            // Rangkai semua dependensi untuk notifikasi
+            final remoteDataSource = NotificationRemoteDataSourceImpl(
+              client: http.Client(),
+              sharedPreferences: prefs,
+            );
+            final repo = NotificationRepositoryImpl(
+              remoteDataSource: remoteDataSource,
+            );
+
             return NotificationProvider(
               getNotifications: GetNotifications(repo),
               markNotificationAsRead: MarkNotificationAsRead(repo),
@@ -104,7 +131,13 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) {
-            final repo = SettingsRepositoryImpl(sharedPreferences: prefs);
+            final remoteDataSource = SettingsRemoteDataSourceImpl(
+              client: http.Client(),
+              sharedPreferences: prefs,
+            );
+            final repo = SettingsRepositoryImpl(
+              remoteDataSource: remoteDataSource,
+            );
             return SettingsProvider(
               getSettings: GetSettings(repo),
               updateSettings: UpdateSettings(repo),

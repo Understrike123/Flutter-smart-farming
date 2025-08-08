@@ -5,6 +5,8 @@ import '../widgets/dashboard/action_buttons.dart';
 import '../widgets/dashboard/notification_section.dart';
 import '../widgets/dashboard/sensor_grid_section.dart';
 import '../widgets/dashboard/status_section.dart';
+import '../../presentation/screens/notifications_screen.dart';
+import '../screens/settings_page.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -29,7 +31,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsPage()),
+            );
+          },
+        ),
+        title: const Text('Dashboard Kebun Alpukat'),
+        // PERBAIKAN: Pastikan actions selalu memiliki IconButton
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationsPage(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Consumer<DashboardProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading || provider.dashboardSummary == null) {

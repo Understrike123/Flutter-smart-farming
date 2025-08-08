@@ -55,6 +55,11 @@ func main() {
 	dashboardService := services.NewDashboardService(sensorRepo, actuatorRepo, notificationRepo)
 	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
 
+	// Inisialisasi untuk Pengaturan
+	settingsRepo := repositories.NewSettingsRepository(db)
+	settingsService := services.NewSettingsService(settingsRepo)
+	settingsHandler := handlers.NewSettingsHandler(settingsService)
+
 	// --- Setup Router ---
 	router := gin.Default()
 
@@ -100,6 +105,11 @@ func main() {
 			{
 				notifications.GET("", notificationHandler.GetNotifications)
 				notifications.PUT("/:notification_id/read", notificationHandler.MarkNotificationRead)
+			}
+			settings := protected.Group("/settings")
+			{
+				settings.GET("", settingsHandler.GetSettings)
+				settings.PUT("", settingsHandler.UpdateSettings)
 			}
 		}
 		// menjalankan server

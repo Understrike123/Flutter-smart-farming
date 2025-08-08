@@ -4,9 +4,9 @@ import "time"
 
 type AppNotification struct {
 	ID        int       `json:"id"`
-	Title     string    `json:"title"`
-	Subtitle  string    `json:"subtitle"`
+	Message   string    `json:"message"`
 	Type      string    `json:"type"`
+	Severity  string    `json:"severity"`
 	Timestamp time.Time `json:"timestamp"`
 	IsRead    bool      `json:"is_read"`
 }

@@ -29,23 +29,19 @@ class SettingsProvider with ChangeNotifier {
 
   Future<void> updateNotificationSetting(bool isEnabled) async {
     if (_settings == null) return;
-    final newSettings = AppSettings(
-      notificationEnabled: isEnabled,
-      soilMoistureThreshold: _settings!.soilMoistureThreshold,
-    );
-    _settings = newSettings;
+    // Optimistic UI update
+    _settings = _settings!.copyWith(notificationsEnabled: isEnabled);
     notifyListeners();
-    await updateSettings(newSettings);
+    // Kirim pembaruan ke backend
+    await updateSettings(_settings!);
   }
 
   Future<void> updateThresholdSetting(double threshold) async {
     if (_settings == null) return;
-    final newSettings = AppSettings(
-      notificationEnabled: _settings!.notificationEnabled,
-      soilMoistureThreshold: threshold,
-    );
-    _settings = newSettings;
+    // Optimistic UI update
+    _settings = _settings!.copyWith(soilMoistureThreshold: threshold);
     notifyListeners();
-    await updateSettings(newSettings);
+    // Kirim pembaruan ke backend
+    await updateSettings(_settings!);
   }
 }

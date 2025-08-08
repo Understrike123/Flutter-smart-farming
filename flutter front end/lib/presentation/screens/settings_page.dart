@@ -20,10 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  // FUNGSI BARU: Untuk menampilkan dialog konfirmasi logout
   Future<void> _showLogoutConfirmationDialog(BuildContext context) async {
-    // 'context.read' digunakan di sini untuk memanggil method provider
-    // tanpa perlu mendengarkan perubahannya.
     final authProvider = context.read<AuthProvider>();
 
     return showDialog<void>(
@@ -85,7 +82,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 subtitle: const Text(
                   'Terima peringatan penting dari kebun Anda.',
                 ),
-                value: settings.notificationEnabled,
+                value: settings.notificationsEnabled,
                 onChanged: (value) {
                   provider.updateNotificationSetting(value);
                 },
@@ -102,9 +99,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 value: settings.soilMoistureThreshold,
                 min: 10,
                 max: 50,
-                divisions: 4,
+                divisions: 40, // Dibuat lebih halus
                 label: '${settings.soilMoistureThreshold.toStringAsFixed(0)}%',
                 onChanged: (value) {
+                  // Panggil update saat slider selesai digeser
                   provider.updateThresholdSetting(value);
                 },
               ),

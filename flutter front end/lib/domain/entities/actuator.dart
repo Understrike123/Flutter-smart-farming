@@ -28,6 +28,19 @@ class Actuator {
           ? ActuatorStatus.aktif
           : ActuatorStatus.nonaktif,
       mode: json['mode'] ?? 'OTOMATIS',
+      iconPath: _getIconPathFromName(json['name']),
     );
+  }
+
+  // Helper untuk menentukan ikon secara lokal berdasarkan nama
+  static String _getIconPathFromName(String? name) {
+    switch (name?.toLowerCase()) {
+      case 'sistem irigasi utama':
+        return 'assets/icons/water_drop.png';
+      case 'pompa pupuk cair':
+        return 'assets/icons/fertilizer.png';
+      default:
+        return 'assets/icons/actuator.png';
+    }
   }
 }

@@ -1,48 +1,32 @@
 import 'package:either_dart/either.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/repositories/data_failure_repository.dart';
 import '../../domain/entities/app_settings.dart';
+import '../repositories/error_exceptions.dart';
 import '../../domain/repositories/settings_repository.dart';
+import '../datasources/settings_remote_data_source.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
-  final SharedPreferences sharedPreferences;
+  final SettingsRemoteDataSource remoteDataSource;
 
-  SettingsRepositoryImpl({required this.sharedPreferences});
+  SettingsRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<Either<Failure, AppSettings>> getSettings() async {
     try {
-      final notifications =
-          sharedPreferences.getBool('notificationsEnabled') ?? true;
-      final threshold =
-          sharedPreferences.getDouble('soilMoistureThreshold') ?? 25.0;
-
-      return Right(
-        AppSettings(
-          notificationEnabled: notifications,
-          soilMoistureThreshold: threshold,
-        ),
-      );
-    } catch (error) {
-      return const Left(ServerFailure('Gagal loading setting'));
+      final settings = await remoteDataSource.getSettings();
+      return Right(settings);
+    } on ServerException {
+      return const Left(ServerFailure('Gagal memuat pengaturan.'));
     }
   }
 
   @override
   Future<Either<Failure, void>> updateSettings(AppSettings settings) async {
     try {
-      // simpan data ke local storage
-      await sharedPreferences.setBool(
-        'notificationsEnabled',
-        settings.notificationEnabled,
-      );
-      await sharedPreferences.setDouble(
-        'soilMoistureThreshold',
-        settings.soilMoistureThreshold,
-      );
+      await remoteDataSource.updateSettings(settings);
       return const Right(null);
-    } catch (error) {
-      return const Left(ServerFailure('Gagal menyimpan pengaturan'));
+    } on ServerException {
+      return const Left(ServerFailure('Gagal menyimpan pengaturan.'));
     }
   }
 }

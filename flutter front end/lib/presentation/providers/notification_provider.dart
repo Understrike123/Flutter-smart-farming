@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/notification.dart';
+import '../../data/repositories/data_failure_repository.dart';
 import '../../domain/usecases/get_notifications.dart';
 import '../../domain/usecases/mark_notification_as_read.dart';
 
@@ -19,18 +20,7 @@ class NotificationProvider with ChangeNotifier {
 
   List<AppNotification> _allNotifications = [];
   List<AppNotification> get filteredNotifications {
-    switch (_currentFilter) {
-      case NotificationFilter.penting:
-        return _allNotifications
-            .where((n) => n.type == NotificationType.warning)
-            .where((n) => n.type == NotificationType.danger)
-            .toList();
-      case NotificationFilter.belumDibaca:
-        return _allNotifications.where((n) => !n.isRead).toList();
-      case NotificationFilter.semua:
-      default:
-        return _allNotifications;
-    }
+    return _allNotifications;
   }
 
   NotificationFilter _currentFilter = NotificationFilter.semua;
@@ -39,7 +29,17 @@ class NotificationProvider with ChangeNotifier {
   Future<void> fetchNotifications() async {
     _isLoading = true;
     notifyListeners();
-    _allNotifications = await getNotifications();
+    // Kirim filter yang sedang aktif ke use case
+    final result = await getNotifications(_currentFilter.name);
+    _allNotifications = []; // Kosongkan dulu untuk menghindari data lama
+
+    // PERBAIKAN: Tambahkan tipe data eksplisit pada parameter lambda
+    result.fold(
+      (Failure failure) => print(failure.message),
+      (List<AppNotification> notificationList) =>
+          _allNotifications = notificationList,
+    );
+
     _isLoading = false;
     notifyListeners();
   }
@@ -49,12 +49,12 @@ class NotificationProvider with ChangeNotifier {
     if (index != -1 && !_allNotifications[index].isRead) {
       _allNotifications[index].isRead = true;
       await markNotificationAsRead(notificationId);
-      notifyListeners();
+      fetchNotifications();
     }
   }
 
   void setFilter(NotificationFilter filter) {
     _currentFilter = filter;
-    notifyListeners();
+    fetchNotifications();
   }
 }
