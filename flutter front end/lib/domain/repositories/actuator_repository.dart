@@ -10,4 +10,7 @@ abstract class ActuatorRepository {
     int actuatorId,
     String command,
   );
+  Future<Either<Failure, void>> createActuator(
+    Map<String, dynamic> actuatorData,
+  );
 }

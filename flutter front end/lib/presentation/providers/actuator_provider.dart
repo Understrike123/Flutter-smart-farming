@@ -20,11 +20,18 @@ class ActuatorProvider with ChangeNotifier {
   List<Actuator> _actuators = [];
   List<Actuator> get actuators => _actuators;
 
+  final Set<int> _updatingActuatorIds = {};
+  bool isUpdating(int actuatorId) => _updatingActuatorIds.contains(actuatorId);
+
   // Method untuk memuat data awal
   Future<void> fetchActuators() async {
+    debugPrint("PROVIDER: Memulai fetchActuators...");
     _isLoading = true;
     notifyListeners();
     final result = await getActuators();
+    debugPrint(
+      "PROVIDER: Selesai memanggil use case, hasilnya: ${result.isRight ? 'Sukses' : 'Gagal'}",
+    );
     result.fold(
       (failure) => print(failure.message),
       (actuatorList) => _actuators = actuatorList,
@@ -34,27 +41,25 @@ class ActuatorProvider with ChangeNotifier {
   }
 
   Future<void> sendCommand(int actuatorId, String command) async {
-    // Optimistic UI update (opsional, tapi membuat UI terasa lebih cepat)
-    final index = _actuators.indexWhere((act) => act.id == actuatorId);
-    if (index != -1) {
-      _actuators[index].status = (command == 'TURN_ON')
-          ? ActuatorStatus.aktif
-          : ActuatorStatus.nonaktif;
-      _actuators[index].mode = (command == 'TURN_ON') ? 'manual' : 'auto';
-      notifyListeners();
-    }
+    // PERBAIKAN 2: Hapus pembaruan optimis, ganti dengan state loading
+    _updatingActuatorIds.add(actuatorId);
+    notifyListeners();
 
     final result = await postActuatorCommand(actuatorId, command);
+
     result.fold(
       (failure) {
         print(failure.message);
-        // Jika gagal, kembalikan data ke kondisi semula
-        fetchActuators();
+        // Tampilkan pesan error jika perlu
       },
       (_) {
-        // Jika sukses, muat ulang data untuk memastikan sinkronisasi
-        fetchActuators();
+        // Jika sukses, tidak perlu melakukan apa-apa karena fetch di bawah akan memperbarui
       },
     );
+
+    // PERBAIKAN 3: Hapus ID dari set loading dan panggil fetch untuk mendapatkan data terbaru
+    _updatingActuatorIds.remove(actuatorId);
+    // Panggil fetchActuators untuk mendapatkan state yang sudah pasti dari server
+    await fetchActuators();
   }
 }

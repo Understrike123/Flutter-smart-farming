@@ -22,6 +22,18 @@ class ActuatorRepositoryImpl implements ActuatorRepository {
   }
 
   @override
+  Future<Either<Failure, void>> createActuator(
+    Map<String, dynamic> actuatorData,
+  ) async {
+    try {
+      await remoteDataSource.createActuator(actuatorData);
+      return const Right(null);
+    } on ServerException {
+      return const Left(ServerFailure('Gagal membuat aktuator.'));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> postActuatorCommand(
     int actuatorId,
     String command,

@@ -134,6 +134,18 @@ class SensorRepositoryImpl implements SensorRepository {
   }
 
   @override
+  Future<Either<Failure, void>> createSensor(
+    Map<String, dynamic> sensorData,
+  ) async {
+    try {
+      await remoteDataSource.createSensor(sensorData);
+      return const Right(null);
+    } on ServerException {
+      return const Left(ServerFailure('Gagal membuat sensor.'));
+    }
+  }
+
+  @override
   Future<Either<Failure, List<SensorHistory>>> getSensorHistory(
     int sensorId,
   ) async {

@@ -20,7 +20,7 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
 
   @override
   Future<DashboardSummary> getDashboardSummary() async {
-    final url = Uri.parse('http://localhost:8080/api/v1/dashboard');
+    final url = Uri.parse('https://depotaircerdas.com/api/sf/dashboard');
     final token = sharedPreferences.getString('authToken');
 
     final response = await client.get(

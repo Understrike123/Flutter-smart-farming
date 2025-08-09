@@ -1,22 +1,25 @@
 package handlers
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	"flutter-smart-farming/backend/internal/models"
 	"flutter-smart-farming/backend/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 type SensorHandler struct {
-	service services.SensorService
+	sensorService services.SensorService
 }
 
-func NewSensorHandler(s services.SensorService) *SensorHandler {
-	return &SensorHandler{service: s}
+func NewSensorHandler(sensorService services.SensorService) *SensorHandler {
+	return &SensorHandler{sensorService: sensorService}
 }
 
 // GET /sensors
@@ -31,7 +34,7 @@ func (h *SensorHandler) GetSensors(c *gin.Context) {
     log.Printf("INFO: GetSensors dipanggil oleh user_id: %v", userID)
     // -----------------------------
 
-	sensors, err := h.service.GetAllSensors()
+	sensors, err := h.sensorService.GetAllSensors()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
 		return
@@ -48,7 +51,7 @@ func (h *SensorHandler) GetSensorReadings(c *gin.Context) {
 		return
 	}
 
-	reading, err := h.service.GetLatestReading(id)
+	reading, err := h.sensorService.GetLatestReading(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Gagal mengambil data pembacaan"})
 		return
@@ -89,11 +92,38 @@ func (h *SensorHandler) GetSensorHistory(c *gin.Context) {
 		}
 	}
 
-	history, err := h.service.GetSensorHistory(id, startTime, endTime)
+	history, err := h.sensorService.GetSensorHistory(id, startTime, endTime)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Gagal mengambil riwayat data"})
 		return
 	}
 
 	c.JSON(http.StatusOK, history)
+}
+
+func (h *SensorHandler) CreateSensor(c *gin.Context) {
+	var newSensor models.Sensor
+	log.Println("INFO: Menerima request untuk menambah sensor baru.")
+	var bodyBytes []byte
+	if c.Request.Body != nil {
+		bodyBytes, _ = io.ReadAll(c.Request.Body)
+	}
+	// Kembalikan body agar bisa dibaca lagi oleh ShouldBindJSON
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+	log.Printf("DEBUG: Raw JSON Body yang diterima: %s", string(bodyBytes))
+	// ----------------------------------------------------
+
+	if err := c.ShouldBindJSON(&newSensor); err != nil {
+		log.Printf("ERROR: Gagal mem-binding JSON: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Input tidak valid: " + err.Error()})
+		return
+	}
+
+	if err := h.sensorService.CreateSensor(&newSensor); err != nil {
+		log.Printf("ERROR: Gagal saat memanggil service CreateSensor: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan sensor"})
+		return
+	}
+	log.Println("INFO: Sensor berhasil disimpan ke database.")
+	c.JSON(http.StatusCreated, gin.H{"message": "Sensor berhasil ditambahkan"})
 }

@@ -6,11 +6,14 @@ class ActuatorCard extends StatelessWidget {
   // 2. Ia menerima data lengkap dan sebuah fungsi dari induknya.
   final Actuator actuatorData;
   final Function(String) onStatusCommand;
+  // PERBAIKAN 1: Tambahkan parameter baru untuk status loading
+  final bool isUpdating;
 
   const ActuatorCard({
     super.key,
     required this.actuatorData,
     required this.onStatusCommand,
+    this.isUpdating = false,
   });
 
   @override
@@ -46,6 +49,26 @@ class ActuatorCard extends StatelessWidget {
               // Widget untuk kontrol lanjutan tetap stateful secara internal
               _AdvancedControls(),
             ],
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                _buildActionButtons(context),
+                if (isUpdating)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 3),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),
@@ -72,17 +95,10 @@ class ActuatorCard extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: ElevatedButton.icon(
-            icon: actuatorData.iconPath.isNotEmpty
-                ? Image.asset(
-                    actuatorData.iconPath,
-                    color: Colors.white,
-                    height: 20,
-                  )
-                : const Icon(Icons.power_settings_new, size: 20),
-            label: const Text('AKTIFKAN'),
-            // 4. Saat ditekan, ia memanggil fungsi 'onStatusChanged' dari induknya.
-            onPressed: () => onStatusCommand('TURN_ON'),
+          child: ElevatedButton(
+            // PERBAIKAN 3: Nonaktifkan tombol saat sedang updating
+            onPressed: isUpdating ? null : () => onStatusCommand('TURN_ON'),
+            child: const Text('AKTIFKAN'),
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: Theme.of(context).primaryColor,
@@ -94,10 +110,9 @@ class ActuatorCard extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: OutlinedButton.icon(
-            icon: const Icon(Icons.cancel_outlined, size: 20),
-            label: const Text('NONAKTIFKAN'),
-            onPressed: () => onStatusCommand('TURN_OFF'),
+          child: OutlinedButton(
+            onPressed: isUpdating ? null : () => onStatusCommand('TURN_OFF'),
+            child: const Text('NONAKTIFKAN'),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.grey.shade700,
               side: BorderSide(color: Colors.grey.shade300),

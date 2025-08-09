@@ -46,6 +46,10 @@ import 'domain/usecases/post_actuator_command.dart';
 import 'data/datasources/notification_remote_data_source.dart';
 import 'data/datasources/settings_remote_data_source.dart';
 
+import 'domain/usecases/create_sensor.dart';
+import 'domain/usecases/create_actuator.dart';
+import 'data/datasources/sensor_remote_data_source.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
@@ -70,12 +74,12 @@ void main() async {
               client: http.Client(),
               sharedPreferences: prefs,
             );
-            final repo = ActuatorRepositoryImpl(
+            final actuatorRepo = ActuatorRepositoryImpl(
               remoteDataSource: remoteDataSource,
             );
             return ActuatorProvider(
-              getActuators: GetActuators(repo),
-              postActuatorCommand: PostActuatorCommand(repo),
+              getActuators: GetActuators(actuatorRepo),
+              postActuatorCommand: PostActuatorCommand(actuatorRepo),
             );
           },
         ),
@@ -116,16 +120,16 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) {
-            final remoteDataSource = SensorRemoteDatasourceImpl(
+            final remoteDataSource = SensorRemoteDataSourceImpl(
               client: http.Client(),
               sharedPreferences: prefs,
             );
-            final repo = SensorRepositoryImpl(
+            final sensorRepo = SensorRepositoryImpl(
               remoteDataSource: remoteDataSource,
             );
             return SensorProvider(
-              getSensors: GetSensor(repo),
-              getSensorHistory: GetSensorHistory(repo),
+              getSensors: GetSensor(sensorRepo),
+              getSensorHistory: GetSensorHistory(sensorRepo),
             );
           },
         ),
@@ -150,11 +154,29 @@ void main() async {
               client: http.Client(),
               sharedPreferences: prefs,
             );
-            final repo = DashboardRepositoryImpl(
+            final dashboardRepo = DashboardRepositoryImpl(
               remoteDataSource: remoteDataSource,
             );
+            final sensorRepo = SensorRepositoryImpl(
+              remoteDataSource: SensorRemoteDataSourceImpl(
+                client: http.Client(),
+                sharedPreferences: prefs,
+              ),
+            );
+            final actuatorRepo = ActuatorRepositoryImpl(
+              remoteDataSource: ActuatorRemoteDataSourceImpl(
+                client: http.Client(),
+                sharedPreferences: prefs,
+              ),
+            );
             return DashboardProvider(
-              getDashboardSummary: GetDashboardSummary(repo),
+              getDashboardSummary: GetDashboardSummary(dashboardRepo),
+              createSensor: CreateSensor(
+                sensorRepo,
+              ), // <-- Suntikkan use case baru
+              createActuator: CreateActuator(
+                actuatorRepo,
+              ), // <-- Suntikkan use case baru
             );
           },
         ),

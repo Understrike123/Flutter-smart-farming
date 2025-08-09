@@ -1,15 +1,16 @@
 package services
 
 import (
-	"time"
 	"flutter-smart-farming/backend/internal/models"
 	"flutter-smart-farming/backend/internal/repositories"
+	"time"
 )
 
 type SensorService interface {
 	GetAllSensors() ([]models.Sensor, error)
 	GetLatestReading(sensorID int) (*models.SensorReading, error)
 	GetSensorHistory(sensorID int, startTime, endTime time.Time) ([]models.SensorReading, error)
+	CreateSensor(sensor *models.Sensor) error
 }
 
 type sensorService struct {
@@ -30,4 +31,7 @@ func (s *sensorService) GetLatestReading(sensorID int) (*models.SensorReading, e
 
 func (s *sensorService) GetSensorHistory(sensorID int, startTime, endTime time.Time) ([]models.SensorReading, error) {
 	return s.repo.GetHistory(sensorID, startTime, endTime)
+}
+func (s *sensorService) CreateSensor(sensor *models.Sensor) error {
+	return s.repo.Create(sensor)
 }

@@ -89,6 +89,7 @@ func main() {
 			sensors := protected.Group("/sensors")
 			{
 				sensors.GET("", sensorHandler.GetSensors) // Mengganti "/" menjadi ""
+				sensors.POST("", sensorHandler.CreateSensor)
 				sensors.GET("/:sensor_id/readings", sensorHandler.GetSensorReadings)
 				sensors.GET("/:sensor_id/history", sensorHandler.GetSensorHistory) 
 			}
@@ -97,6 +98,7 @@ func main() {
 			actuators := protected.Group("/actuators")
 			{
 				actuators.GET("", actuatorHandler.GetActuators)
+				actuators.POST("", actuatorHandler.CreateActuator)
 				actuators.POST("/:actuator_id/command", actuatorHandler.PostCommand)
 			}
 

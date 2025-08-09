@@ -39,7 +39,9 @@ class _ActuatorControlScreenState extends State<ActuatorControlScreen> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: ActuatorCard(
+                    key: ValueKey(actuator.id),
                     actuatorData: actuator,
+                    isUpdating: provider.isUpdating(actuator.id),
                     onStatusCommand: (command) {
                       provider.sendCommand(actuator.id, command);
                     },

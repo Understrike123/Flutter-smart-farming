@@ -8,6 +8,7 @@ import (
 type ActuatorService interface {
 	GetAllActuators() ([]models.Actuator, error)
 	ProcessCommand(actuatorID int, command string, duration *int) error
+	CreateActuator(actuator *models.Actuator) error
 }
 
 type actuatorService struct {
@@ -46,4 +47,8 @@ func (s *actuatorService) ProcessCommand(actuatorID int, command string, duratio
 		Status: "SUCCESS",
 	}
 	return s.repo.LogCommand(logEntry)
+}
+
+func (s *actuatorService) CreateActuator(actuator *models.Actuator) error {
+	return s.repo.Create(actuator)
 }

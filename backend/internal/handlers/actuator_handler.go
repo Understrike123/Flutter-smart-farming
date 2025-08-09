@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"flutter-smart-farming/backend/internal/models"
 	"flutter-smart-farming/backend/internal/services"
 	"net/http"
 	"strconv"
@@ -53,4 +54,19 @@ func (h *ActuatorHandler) PostCommand(c *gin.Context){
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Perintah berhasil dikirim"})
+}
+
+func (h *ActuatorHandler) CreateActuator(c *gin.Context) {
+	var newActuator models.Actuator
+	if err := c.ShouldBindJSON(&newActuator); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Input tidak valid: " + err.Error()})
+		return
+	}
+
+	if err := h.actuatorService.CreateActuator(&newActuator); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan aktuator"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Aktuator berhasil ditambahkan"})
 }

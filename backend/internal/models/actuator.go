@@ -2,10 +2,13 @@ package models
 
 // Actuator merepresentasikan data aktuator dari database.
 type Actuator struct {
-	ID     int    `json:"id"`
-	Name   string `json:"name"`
-	Status bool   `json:"status"` // true = ON, false = OFF
-	Mode   string `json:"mode"`   // "auto" atau "manual"
+	ID         int    `json:"id"`
+	DeviceID   string `json:"device_id"` // <-- Dibutuhkan untuk INSERT
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Location   string `json:"location"` // <-- Dibutuhkan untuk INSERT
+	Status     bool   `json:"status"`
+	Mode       string `json:"mode"`
 }
 
 // ActuatorCommand merepresentasikan log perintah yang dikirim ke aktuator.

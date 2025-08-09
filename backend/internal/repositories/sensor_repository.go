@@ -11,6 +11,7 @@ type SensorRepository interface {
 	FindAll() ([]models.Sensor, error)
 	GetLatestReading(sensorID int) (*models.SensorReading, error)
 	GetHistory(sensorID int, startTime, endTime time.Time) ([]models.SensorReading, error)
+	Create(sensor *models.Sensor) error
 }
 
 type sensorRepository struct {
@@ -111,4 +112,12 @@ func (r *sensorRepository) GetHistory(sensorID int, startTime, endTime time.Time
 		readings = append(readings, reading)
 	}
 	return readings, nil
+}
+
+func (r *sensorRepository) Create(sensor *models.Sensor) error {
+	query := `INSERT INTO sensor_data (device_id, name, type, location, unit, value) VALUES ($1, $2, $3, $4, $5, 0.0)`
+	_, err := r.db.Exec(query, sensor.DeviceID, sensor.Name, sensor.Type, sensor.Location, sensor.Unit)
+	log.Println("DEBUG: Masuk ke repository FindAll.")
+	
+	return err
 }

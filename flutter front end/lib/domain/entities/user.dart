@@ -1,14 +1,18 @@
 class User {
   final String id;
   final String name;
-  final String email;
+  final String username;
+  final String depotName;
   final String token;
+  final bool isSuperAdmin;
 
   User({
     required this.id,
     required this.name,
-    required this.email,
+    required this.username,
+    required this.depotName,
     required this.token,
+    required this.isSuperAdmin,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -19,8 +23,10 @@ class User {
       // Berikan nilai default jika kunci tidak ada
       id: data['id'] ?? 'user-id-placeholder',
       name: data['name'] ?? 'User',
-      email: data['email'] ?? '',
+      username: data['email'] ?? '',
+      depotName: data['depot_name'] ?? '',
       token: data['token'] ?? '', // Ambil token
+      isSuperAdmin: data['is_super_admin'] == 1,
     );
   }
 }

@@ -1,46 +1,52 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-.env
+# Ketergantungan (Dependencies)
+# Direktori ini berisi semua package dari npm dan bisa sangat besar.
+# Selalu instal ulang dengan 'npm install' daripada menyimpannya di Git.
 /node_modules
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+# File Environment
+# File ini berisi variabel sensitif seperti password database dan kunci API.
+# JANGAN PERNAH simpan file ini di Git.
+# Simpan file .env.example sebagai gantinya.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Symbolication related
-app.*.symbols
+# Log
+# Abaikan file log yang dibuat oleh npm atau aplikasi.
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
 
-# Obfuscation related
-app.*.map.json
+# Direktori Build/Dist
+# Jika Anda menggunakan TypeScript atau bundler, abaikan folder outputnya.
+/dist
+/build
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# File Sistem Operasi
+# File metadata yang dibuat oleh sistem operasi.
+.DS_Store
+Thumbs.db
+
+# File Editor & IDE
+# Folder konfigurasi yang dibuat oleh editor kode.
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# File Cache
+.npm
+.eslintcache
+
+# Laporan Coverage
+# Dihasilkan oleh framework testing.
+coverage
+lcov.info
+
