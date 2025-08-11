@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class SensorCard extends StatelessWidget {
   final String iconPath;
   final Color iconColor;
-  final String value;
+  final double value;
+  final String unit;
   final String label;
   final VoidCallback? onTap; // <-- TAMBAHKAN INI
 
@@ -11,6 +12,7 @@ class SensorCard extends StatelessWidget {
     super.key,
     required this.iconPath,
     required this.value,
+    required this.unit,
     required this.label,
     this.iconColor = Colors.black,
     this.onTap, // <-- TAMBAHKAN INI
@@ -50,7 +52,7 @@ class SensorCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    value,
+                    '$value $unit',
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,

@@ -12,15 +12,17 @@ abstract class DashboardRemoteDataSource {
 class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   final http.Client client;
   final SharedPreferences sharedPreferences;
+  final String baseUrl;
 
   DashboardRemoteDataSourceImpl({
     required this.client,
     required this.sharedPreferences,
+    required this.baseUrl,
   });
 
   @override
   Future<DashboardSummary> getDashboardSummary() async {
-    final url = Uri.parse('https://depotaircerdas.com/api/sf/dashboard');
+    final url = Uri.parse('${baseUrl}api/sf/dashboard');
     final token = sharedPreferences.getString('authToken');
 
     final response = await client.get(

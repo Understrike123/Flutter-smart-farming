@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../../data/repositories/error_exceptions.dart';
 import '../../domain/entities/user.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 abstract class AuthRemoteDataSource {
   Future<User> login(String email, String password);
@@ -10,14 +11,15 @@ abstract class AuthRemoteDataSource {
 
 class AuthRemoteDataSourcesImpl implements AuthRemoteDataSource {
   final http.Client client;
+  final String baseUrl;
 
-  AuthRemoteDataSourcesImpl({required this.client});
+  AuthRemoteDataSourcesImpl({required this.client, required this.baseUrl});
 
   @override
   Future<User> login(String username, String password) async {
     // final baseUrl = dotenv.env['API_BASE_URL'];
     // url login
-    final url = Uri.parse('https://depotaircerdas.com/api/auth/login');
+    final url = Uri.parse('${baseUrl}api/auth/login');
 
     final response = await client.post(
       url,

@@ -19,22 +19,41 @@ class NotificationProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   List<AppNotification> _allNotifications = [];
+
+  // Getter ini sekarang benar-benar melakukan filtering
   List<AppNotification> get filteredNotifications {
-    return _allNotifications;
+    switch (_currentFilter) {
+      case NotificationFilter.belumDibaca:
+        // Beri tipe data eksplisit untuk membantu analyzer Dart
+        return _allNotifications
+            .where((AppNotification n) => n.isRead == false)
+            .toList();
+
+      case NotificationFilter.penting:
+        // Lakukan hal yang sama di sini
+        return _allNotifications
+            .where((AppNotification n) => n.severity == 'CRITICAL')
+            .toList();
+
+      case NotificationFilter.semua:
+        return _allNotifications;
+    }
   }
 
   NotificationFilter _currentFilter = NotificationFilter.semua;
   NotificationFilter get currentFilter => _currentFilter;
 
+  // Method ini hanya perlu dipanggil sekali saat halaman dibuka
   Future<void> fetchNotifications() async {
     _isLoading = true;
     notifyListeners();
-    // Kirim filter yang sedang aktif ke use case
-    final result = await getNotifications(_currentFilter.name);
-    _allNotifications = []; // Kosongkan dulu untuk menghindari data lama
 
-    // PERBAIKAN: Tambahkan tipe data eksplisit pada parameter lambda
+    // Selalu ambil semua notifikasi, biarkan filtering dilakukan di aplikasi
+    final result = await getNotifications('semua');
+    _allNotifications = [];
+
     result.fold(
+      // Tipe 'Failure' sekarang akan diambil dari file yang diimpor
       (Failure failure) => print(failure.message),
       (List<AppNotification> notificationList) =>
           _allNotifications = notificationList,
@@ -45,16 +64,27 @@ class NotificationProvider with ChangeNotifier {
   }
 
   Future<void> markAsRead(int notificationId) async {
-    final index = _allNotifications.indexWhere((n) => n.id == notificationId);
+    // Dan juga di sini
+    final index = _allNotifications.indexWhere(
+      (AppNotification n) => n.id == notificationId,
+    );
     if (index != -1 && !_allNotifications[index].isRead) {
+      // Update state secara optimis agar UI langsung berubah
       _allNotifications[index].isRead = true;
+      notifyListeners();
+
+      // Kirim request ke backend di latar belakang
       await markNotificationAsRead(notificationId);
-      fetchNotifications();
+      // Tidak perlu fetch ulang, lebih efisien
     }
   }
 
+  // Method ini sekarang jauh lebih cepat
   void setFilter(NotificationFilter filter) {
-    _currentFilter = filter;
-    fetchNotifications();
+    if (_currentFilter != filter) {
+      _currentFilter = filter;
+      // Cukup panggil notifyListeners(), tidak perlu panggil API lagi
+      notifyListeners();
+    }
   }
 }

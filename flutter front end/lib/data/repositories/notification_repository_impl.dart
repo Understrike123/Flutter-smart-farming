@@ -2,8 +2,6 @@ import '../../domain/entities/notification.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../repositories/data_failure_repository.dart';
 import '../repositories/error_exceptions.dart';
-import '../../domain/entities/notification.dart';
-import '../../domain/repositories/notification_repository.dart';
 import '../datasources/notification_remote_data_source.dart';
 import 'package:either_dart/either.dart';
 

@@ -14,15 +14,17 @@ abstract class ActuatorRemoteDataSource {
 class ActuatorRemoteDataSourceImpl implements ActuatorRemoteDataSource {
   final http.Client client;
   final SharedPreferences sharedPreferences;
+  final String baseUrl;
 
   ActuatorRemoteDataSourceImpl({
     required this.client,
     required this.sharedPreferences,
+    required this.baseUrl,
   });
 
   @override
   Future<List<Actuator>> getActuators() async {
-    final url = Uri.parse('http://localhost:8080/api/v1/actuators');
+    final url = Uri.parse('${baseUrl}api/sf/actuators');
     final token = sharedPreferences.getString('authToken');
     debugPrint(
       "DATA SOURCE: Mengirim GET request ke $url dengan token: Bearer $token",
@@ -54,9 +56,7 @@ class ActuatorRemoteDataSourceImpl implements ActuatorRemoteDataSource {
 
   @override
   Future<void> postCommand(int actuatorId, String command) async {
-    final url = Uri.parse(
-      'http://localhost:8080/api/v1/actuators/$actuatorId/command',
-    );
+    final url = Uri.parse('${baseUrl}api/sf/actuators/$actuatorId/command');
     final token = sharedPreferences.getString('authToken');
 
     final response = await client.post(
@@ -74,7 +74,7 @@ class ActuatorRemoteDataSourceImpl implements ActuatorRemoteDataSource {
 
   @override
   Future<void> createActuator(Map<String, dynamic> actuatorData) async {
-    final url = Uri.parse('http://localhost:8080/api/v1/actuators');
+    final url = Uri.parse('${baseUrl}api/sf/actuators');
     final token = sharedPreferences.getString('authToken');
 
     final response = await client.post(

@@ -4,11 +4,12 @@ class Sensor {
   // PERBAIKAN: Ubah tipe data id dari String menjadi int
   final int id;
   final String name;
-  final String value;
+  final double value;
   final String unit;
   final String statusLabel;
   final String iconPath;
   final Color color;
+  // field ini tidak ada di API dari back end
   final double average;
   final double min;
   final double max;
@@ -21,36 +22,35 @@ class Sensor {
     required this.statusLabel,
     required this.iconPath,
     required this.color,
-    required this.average,
-    required this.min,
-    required this.max,
+    this.average = 0.0,
+    this.min = 0.0,
+    this.max = 0.0,
   });
 
   factory Sensor.fromJson(Map<String, dynamic> json) {
     // PERBAIKAN: Tambahkan kembali fungsi helper 'toDouble' yang hilang
-    double toDouble(dynamic value) {
-      if (value is double) return value;
-      if (value is int) return value.toDouble();
-      if (value is String) return double.tryParse(value) ?? 0.0;
-      return 0.0;
+    String _getStatusLabel(double val) {
+      if (val > 50) return "Normal";
+      if (val > 20) return "Cukup";
+      return "Rendah";
     }
 
     // Data statistik mungkin berada di dalam nested object
-    final stats = json['stats'] ?? {};
-
+    double currentValue = (json['value'] as num?)?.toDouble() ?? 0.0;
     return Sensor(
       id: json['id'] ?? 0,
       name: json['name'] ?? 'Sensor Tidak Dikenal',
-      // Gunakan kunci baru dari backend
-      value: json['current_value']?.toString() ?? '0',
+      // PERBAIKAN: Gunakan 'value' dari JSON, bukan 'current_value'
+      value: json['value'],
       unit: json['unit'] ?? '',
-      statusLabel: json['status'] ?? 'N/A',
+      // PERBAIKAN: Buat status label secara lokal berdasarkan nilai
+      statusLabel: _getStatusLabel(currentValue),
       iconPath: _getIconPathFromName(json['name']),
       color: _getColorFromName(json['name']),
-      // Untuk statistik, kita bisa gunakan nilai default atau dari API jika ada
-      average: toDouble(json['stats']?['average']),
-      min: toDouble(json['stats']?['min']),
-      max: toDouble(json['stats']?['max']),
+      // Beri nilai default karena API /dashboard tidak menyediakannya
+      average: (json['stats']?['average'] as num?)?.toDouble() ?? 0.0,
+      min: (json['stats']?['min'] as num?)?.toDouble() ?? 0.0,
+      max: (json['stats']?['max'] as num?)?.toDouble() ?? 0.0,
     );
   }
 

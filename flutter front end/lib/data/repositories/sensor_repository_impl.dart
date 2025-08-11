@@ -11,125 +11,14 @@ class SensorRepositoryImpl implements SensorRepository {
   final SensorRemoteDataSource remoteDataSource;
 
   SensorRepositoryImpl({required this.remoteDataSource});
-  final Map<String, List<SensorHistory>> _historyData = {
-    'soil_moisture_1': [
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 12)),
-        value: 70,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 10)),
-        value: 55,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 8)),
-        value: 40,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 6)),
-        value: 50,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 4)),
-        value: 35,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-        value: 50,
-      ),
-      SensorHistory(timestamp: DateTime.now(), value: 68),
-    ],
-    'temperature_1': [
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 12)),
-        value: 28,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 10)),
-        value: 29,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 8)),
-        value: 31,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 6)),
-        value: 30,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 4)),
-        value: 28,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-        value: 27,
-      ),
-      SensorHistory(timestamp: DateTime.now(), value: 29),
-    ],
-    'humidity_1': [
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 12)),
-        value: 80,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 10)),
-        value: 82,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 8)),
-        value: 75,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 6)),
-        value: 70,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 4)),
-        value: 74,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-        value: 76,
-      ),
-      SensorHistory(timestamp: DateTime.now(), value: 78),
-    ],
-    'light_intensity_1': [
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 12)),
-        value: 5000,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 10)),
-        value: 8000,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 8)),
-        value: 12000,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 6)),
-        value: 11000,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 4)),
-        value: 9000,
-      ),
-      SensorHistory(
-        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-        value: 7000,
-      ),
-      SensorHistory(timestamp: DateTime.now(), value: 9200),
-    ],
-  };
+
   @override
   Future<Either<Failure, List<Sensor>>> getSensors() async {
     try {
       final sensors = await remoteDataSource.getSensors();
       return Right(sensors);
     } on ServerException {
-      return const Left(
-        ServerFailure('Gagal mengambil data sensor dari server.'),
-      );
+      return const Left(ServerFailure('Gagal mengambil data sensor.'));
     }
   }
 
@@ -149,33 +38,11 @@ class SensorRepositoryImpl implements SensorRepository {
   Future<Either<Failure, List<SensorHistory>>> getSensorHistory(
     int sensorId,
   ) async {
-    // Nanti, ini akan memanggil API. Untuk sekarang, kita gunakan data dummy.
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    // Logika untuk mencocokkan ID int dengan kunci string di data dummy
-    // Ini hanyalah solusi sementara untuk data dummy.
-    String key;
-    switch (sensorId) {
-      case 1:
-        key = 'soil_moisture_1';
-        break;
-      case 2:
-        key = 'temperature_1';
-        break;
-      case 3:
-        key = 'humidity_1';
-        break;
-      case 4:
-        key = 'light_intensity_1';
-        break;
-      default:
-        key = '';
-    }
-
-    if (_historyData.containsKey(key)) {
-      return Right(_historyData[key]!);
-    } else {
-      return const Right([]); // Kembalikan list kosong jika tidak ditemukan
+    try {
+      final history = await remoteDataSource.getSensorHistory(sensorId);
+      return Right(history);
+    } on ServerException {
+      return const Left(ServerFailure('Gagal mengambil riwayat sensor.'));
     }
   }
 }

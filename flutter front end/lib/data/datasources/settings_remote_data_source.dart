@@ -12,15 +12,17 @@ abstract class SettingsRemoteDataSource {
 class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
   final http.Client client;
   final SharedPreferences sharedPreferences;
+  final String baseUrl;
 
   SettingsRemoteDataSourceImpl({
     required this.client,
     required this.sharedPreferences,
+    required this.baseUrl,
   });
 
   @override
   Future<AppSettings> getSettings() async {
-    final url = Uri.parse('http://localhost:8080/api/v1/settings');
+    final url = Uri.parse('${baseUrl}api/sf/settings');
     final token = sharedPreferences.getString('authToken');
 
     final response = await client.get(
@@ -37,7 +39,7 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
 
   @override
   Future<void> updateSettings(AppSettings settings) async {
-    final url = Uri.parse('http://localhost:8080/api/v1/settings');
+    final url = Uri.parse('${baseUrl}api/sf/settings');
     final token = sharedPreferences.getString('authToken');
 
     final response = await client.put(

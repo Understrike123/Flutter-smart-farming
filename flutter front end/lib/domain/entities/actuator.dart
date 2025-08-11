@@ -24,7 +24,7 @@ class Actuator {
       id: json['id'] ?? 0,
       title: json['name'] ?? 'Aktuator Tidak Dikenal',
       // PERBAIKAN: Gunakan 'status' boolean dari JSON
-      status: (json['status'] == true)
+      status: (json['status'] == 1)
           ? ActuatorStatus.aktif
           : ActuatorStatus.nonaktif,
       mode: json['mode'] ?? 'OTOMATIS',

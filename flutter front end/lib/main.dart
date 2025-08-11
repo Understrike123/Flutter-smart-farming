@@ -23,7 +23,7 @@ import 'data/repositories/sensor_repository_impl.dart';
 import 'domain/usecases/get_sensor_history.dart';
 import 'package:flutter_smarthome/domain/usecases/get_sensor.dart';
 import 'presentation/providers/sensor_provider.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'data/repositories/settings_repository_impl.dart';
 import 'domain/usecases/get_settings.dart';
 import 'domain/usecases/update_settings.dart';
@@ -48,11 +48,11 @@ import 'data/datasources/settings_remote_data_source.dart';
 
 import 'domain/usecases/create_sensor.dart';
 import 'domain/usecases/create_actuator.dart';
-import 'data/datasources/sensor_remote_data_source.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
+  await dotenv.load(fileName: ".env");
 
   // siapkan SharedPreferences atau local storage jika perlu
   // final preferences = await SharedPreferences.getInstance();
@@ -73,6 +73,7 @@ void main() async {
             final remoteDataSource = ActuatorRemoteDataSourceImpl(
               client: http.Client(),
               sharedPreferences: prefs,
+              baseUrl: dotenv.env['API_BASE_URL']!,
             );
             final actuatorRepo = ActuatorRepositoryImpl(
               remoteDataSource: remoteDataSource,
@@ -89,6 +90,7 @@ void main() async {
             final localDataSource = AuthLocalDataImpl(sharedPreferences: prefs);
             final remoteDataSource = AuthRemoteDataSourcesImpl(
               client: http.Client(),
+              baseUrl: dotenv.env['API_BASE_URL']!,
             );
             final authRepo = AuthRepositoryImpl(
               localDataSource: localDataSource,
@@ -107,6 +109,7 @@ void main() async {
             final remoteDataSource = NotificationRemoteDataSourceImpl(
               client: http.Client(),
               sharedPreferences: prefs,
+              baseUrl: dotenv.env['API_BASE_URL']!,
             );
             final repo = NotificationRepositoryImpl(
               remoteDataSource: remoteDataSource,
@@ -123,6 +126,7 @@ void main() async {
             final remoteDataSource = SensorRemoteDataSourceImpl(
               client: http.Client(),
               sharedPreferences: prefs,
+              baseUrl: dotenv.env['API_BASE_URL']!,
             );
             final sensorRepo = SensorRepositoryImpl(
               remoteDataSource: remoteDataSource,
@@ -138,6 +142,7 @@ void main() async {
             final remoteDataSource = SettingsRemoteDataSourceImpl(
               client: http.Client(),
               sharedPreferences: prefs,
+              baseUrl: dotenv.env['API_BASE_URL']!,
             );
             final repo = SettingsRepositoryImpl(
               remoteDataSource: remoteDataSource,
@@ -153,6 +158,7 @@ void main() async {
             final remoteDataSource = DashboardRemoteDataSourceImpl(
               client: http.Client(),
               sharedPreferences: prefs,
+              baseUrl: dotenv.env['API_BASE_URL']!,
             );
             final dashboardRepo = DashboardRepositoryImpl(
               remoteDataSource: remoteDataSource,
@@ -161,12 +167,14 @@ void main() async {
               remoteDataSource: SensorRemoteDataSourceImpl(
                 client: http.Client(),
                 sharedPreferences: prefs,
+                baseUrl: dotenv.env['API_BASE_URL']!,
               ),
             );
             final actuatorRepo = ActuatorRepositoryImpl(
               remoteDataSource: ActuatorRemoteDataSourceImpl(
                 client: http.Client(),
                 sharedPreferences: prefs,
+                baseUrl: dotenv.env['API_BASE_URL']!,
               ),
             );
             return DashboardProvider(
@@ -194,6 +202,7 @@ class SmartFarmingApp extends StatelessWidget {
     return MaterialApp(
       title: 'Smart Farming Dashboard',
       theme: AppTheme.lightTheme,
+
       home: const LoginScreen(),
       debugShowCheckedModeBanner: false,
     );

@@ -5,6 +5,7 @@ import 'package:flutter_smarthome/presentation/providers/sensor_provider.dart';
 import '../widgets/sensor_detail/detailed_stats_section.dart';
 import '../widgets/sensor_detail/historical_chart_section.dart';
 import '../widgets/sensor_detail/sensor_selector.dart';
+import '../../domain/entities/sensor_history.dart';
 
 class SensorDetailScreen extends StatefulWidget {
   final Sensor sensor;

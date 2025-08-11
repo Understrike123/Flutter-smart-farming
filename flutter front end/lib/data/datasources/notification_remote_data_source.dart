@@ -12,18 +12,18 @@ abstract class NotificationRemoteDataSource {
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   final http.Client client;
   final SharedPreferences sharedPreferences;
+  final String baseUrl;
 
   NotificationRemoteDataSourceImpl({
     required this.client,
     required this.sharedPreferences,
+    required this.baseUrl,
   });
 
   @override
   Future<List<AppNotification>> getNotifications(String filter) async {
     // Bangun URL dengan query parameter untuk filter
-    final url = Uri.parse(
-      'http://localhost:8080/api/v1/notifications?filter=$filter',
-    );
+    final url = Uri.parse('${baseUrl}api/sf/notifications?filter=$filter');
     final token = sharedPreferences.getString('authToken');
 
     final response = await client.get(
@@ -45,7 +45,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   @override
   Future<void> markAsRead(int notificationId) async {
     final url = Uri.parse(
-      'http://localhost:8080/api/v1/notifications/$notificationId/read',
+      '${baseUrl}api/sf/notifications/$notificationId/read',
     );
     final token = sharedPreferences.getString('authToken');
 

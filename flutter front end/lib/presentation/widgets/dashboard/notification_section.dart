@@ -31,47 +31,91 @@ class NotificationSection extends StatelessWidget {
             ),
           )
         else
-          Column(
-            children: [
-              ...notificationsPreview.map((notification) {
-                return NotificationTile(
-                  notification: notification,
-                  onTap: () {
-                    // Saat di-tap, tandai sudah dibaca (melalui provider)
-                    // dan pindah ke halaman notifikasi lengkap
-                    context.read<NotificationProvider>().markAsRead(
-                      notification.id,
-                    );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NotificationsPage(),
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.green[100],
+              borderRadius: BorderRadius.circular(12),
+            ),
+
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.green[100],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NotificationsPage(),
+                              ),
+                            );
+                          },
+
+                          child: Text(
+                            'Lihat notifikasi',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
                       ),
-                    );
-                  },
-                );
-              }).toList(),
-              // Tampilkan tombol "Lihat Semua" jika ada lebih dari 2 notifikasi
-              if (notifications.length > 2)
-                ListTile(
-                  title: Text(
-                    'Lihat Semua Notifikasi',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NotificationsPage(),
-                      ),
+                  ],
+                ),
+
+                ListView.builder(
+                  itemCount: notificationsPreview.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final notification = notificationsPreview[index];
+                    return NotificationTile(
+                      notification: notification,
+                      onTap: () {
+                        // Saat di-tap, tandai sudah dibaca (melalui provider)
+                        // dan pindah ke halaman notifikasi lengkap
+                        context.read<NotificationProvider>().markAsRead(
+                          notification.id,
+                        );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationsPage(),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
-            ],
+
+                // Tampilkan tombol "Lihat Semua" jika ada lebih dari 2 notifikasi
+                if (notifications.length > 2)
+                  ListTile(
+                    title: Text(
+                      'Lihat Semua Notifikasi',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationsPage(),
+                        ),
+                      );
+                    },
+                  ),
+              ],
+            ),
           ),
       ],
     );

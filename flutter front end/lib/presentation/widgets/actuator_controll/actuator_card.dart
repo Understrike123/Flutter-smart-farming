@@ -43,7 +43,7 @@ class ActuatorCard extends StatelessWidget {
             const SizedBox(height: 8),
             _buildInfoRow('Mode:', actuatorData.mode),
             const SizedBox(height: 16),
-            _buildActionButtons(context),
+            // _buildActionButtons(context),
             if (actuatorData.hasAdvancedControls) ...[
               const SizedBox(height: 16),
               // Widget untuk kontrol lanjutan tetap stateful secara internal
