@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../repositories/error_exceptions.dart';
+import '../../domain/entities/setting_threshold.dart';
 import '../../domain/entities/app_settings.dart';
 
 abstract class SettingsRemoteDataSource {
@@ -42,16 +43,17 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
     final url = Uri.parse('${baseUrl}api/sf/settings');
     final token = sharedPreferences.getString('authToken');
 
+    final body = {
+      'new_thresholds': settings.thresholds.map((t) => t.toJson()).toList(),
+      'new_email': settings.notificationPref.email,
+    };
     final response = await client.put(
       url,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: json.encode({
-        'notifications_enabled': settings.notificationsEnabled,
-        'soil_moisture_threshold': settings.soilMoistureThreshold,
-      }),
+      body: json.encode(body),
     );
 
     if (response.statusCode != 200) {

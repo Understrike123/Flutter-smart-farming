@@ -34,7 +34,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     });
   }
 
-  int _currentNavIndex = 0;
+  int _currentNavIndex = 3;
 
   void _handleNavTap(int index) {
     // Jika pengguna menekan tab yang sudah aktif, jangan lakukan apa-apa

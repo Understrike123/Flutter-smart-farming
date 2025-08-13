@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
-import '../../domain/entities/app_settings.dart';
+import 'package:flutter/material.dart';
+import '../../domain/entities/setting_threshold.dart';
 import '../../domain/usecases/get_settings.dart';
 import '../../domain/usecases/update_settings.dart';
+import '../../domain/entities/app_settings.dart';
+import '../../domain/entities/notification_pref.dart';
 
 class SettingsProvider with ChangeNotifier {
   final GetSettings getSettings;
@@ -15,6 +18,9 @@ class SettingsProvider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isSaving = false;
+  bool get isSaving => _isSaving;
+
   Future<void> loadSettings() async {
     _isLoading = true;
     notifyListeners();
@@ -27,21 +33,44 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateNotificationSetting(bool isEnabled) async {
+  // Method untuk memperbarui nilai threshold di state lokal
+  void updateLocalThreshold(int id, {int? min, int? max}) {
     if (_settings == null) return;
-    // Optimistic UI update
-    _settings = _settings!.copyWith(notificationsEnabled: isEnabled);
-    notifyListeners();
-    // Kirim pembaruan ke backend
-    await updateSettings(_settings!);
+    final index = _settings!.thresholds.indexWhere((t) => t.id == id);
+    if (index != -1) {
+      final oldThreshold = _settings!.thresholds[index];
+      _settings!.thresholds[index] = SettingThreshold(
+        id: oldThreshold.id,
+        name: oldThreshold.name,
+        thresholdMin: min ?? oldThreshold.thresholdMin,
+        thresholdMax: max ?? oldThreshold.thresholdMax,
+      );
+      notifyListeners();
+    }
   }
 
-  Future<void> updateThresholdSetting(double threshold) async {
+  // Method untuk memperbarui email di state lokal
+  void updateLocalEmail(String? email) {
     if (_settings == null) return;
-    // Optimistic UI update
-    _settings = _settings!.copyWith(soilMoistureThreshold: threshold);
+    _settings = AppSettings(
+      thresholds: _settings!.thresholds,
+      notificationPref: NotificationPref(email: email),
+    );
     notifyListeners();
-    // Kirim pembaruan ke backend
-    await updateSettings(_settings!);
+  }
+
+  // Method untuk menyimpan semua perubahan ke backend
+  Future<bool> saveSettings() async {
+    if (_settings == null) return false;
+
+    _isSaving = true;
+    notifyListeners();
+
+    final result = await updateSettings(_settings!);
+
+    _isSaving = false;
+    notifyListeners();
+
+    return result.isRight; // true jika sukses, false jika gagal
   }
 }

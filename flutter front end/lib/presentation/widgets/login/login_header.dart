@@ -16,7 +16,7 @@ class LoginHeader extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         const Text(
-          'Smart Farming',
+          'Smart Farming\nFlutter Application',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 28,

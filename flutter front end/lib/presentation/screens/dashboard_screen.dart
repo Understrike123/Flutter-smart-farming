@@ -158,7 +158,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             );
           },
         ),
-        title: const Text('Dashboard Kebun Alpukat'),
+        title: const Text('Dashboard Aplikasi IOT'),
         // PERBAIKAN: Pastikan actions selalu memiliki IconButton
         actions: [
           IconButton(
@@ -219,7 +219,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                   );
                                 },
-                                icon: Icon(Icons.open_in_new),
+                                icon: Icon(
+                                  Icons.open_in_new,
+                                  size: 27,
+                                  weight: 23,
+                                ),
                               ),
                             ],
                           ),
@@ -246,7 +250,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         currentIndex: _currentNavIndex,
         onTabTapped: _handleNavTap,
       ),
-
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,

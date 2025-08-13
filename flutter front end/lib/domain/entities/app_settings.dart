@@ -1,29 +1,23 @@
-class AppSettings {
-  final bool notificationsEnabled;
-  final double soilMoistureThreshold;
+import 'notification_pref.dart';
+import 'setting_threshold.dart';
 
-  AppSettings({
-    required this.notificationsEnabled,
-    required this.soilMoistureThreshold,
-  });
+class AppSettings {
+  final List<SettingThreshold> thresholds;
+  final NotificationPref notificationPref;
+
+  AppSettings({required this.thresholds, required this.notificationPref});
 
   factory AppSettings.fromJson(Map<String, dynamic> json) {
     return AppSettings(
-      notificationsEnabled: json['notifications_enabled'] ?? true,
-      soilMoistureThreshold:
-          (json['soil_moisture_threshold'] as num?)?.toDouble() ?? 25.0,
-    );
-  }
+      thresholds:
+          (json['thresholds'] as List<dynamic>?)
+              ?.map((item) => SettingThreshold.fromJson(item))
+              .toList() ??
+          [],
 
-  // Method untuk menyalin objek dengan perubahan
-  AppSettings copyWith({
-    bool? notificationsEnabled,
-    double? soilMoistureThreshold,
-  }) {
-    return AppSettings(
-      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
-      soilMoistureThreshold:
-          soilMoistureThreshold ?? this.soilMoistureThreshold,
+      notificationPref: NotificationPref.fromJson(
+        json['notification_preferences'] ?? {},
+      ),
     );
   }
 }

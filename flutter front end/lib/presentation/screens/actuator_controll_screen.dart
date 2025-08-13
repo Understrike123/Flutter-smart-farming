@@ -31,7 +31,7 @@ class _ActuatorControlScreenState extends State<ActuatorControlScreen> {
     });
   }
 
-  int _currentNavIndex = 0;
+  int _currentNavIndex = 2;
 
   void _handleNavTap(int index) {
     // Jika pengguna menekan tab yang sudah aktif, jangan lakukan apa-apa

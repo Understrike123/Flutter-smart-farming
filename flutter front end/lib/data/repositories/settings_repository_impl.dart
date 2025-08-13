@@ -1,9 +1,10 @@
 import 'package:either_dart/either.dart';
 import '../../data/repositories/data_failure_repository.dart';
-import '../../domain/entities/app_settings.dart';
+import '../../domain/entities/setting_threshold.dart';
 import '../repositories/error_exceptions.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../datasources/settings_remote_data_source.dart';
+import '../../domain/entities/app_settings.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
   final SettingsRemoteDataSource remoteDataSource;

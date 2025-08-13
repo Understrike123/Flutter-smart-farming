@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class BotNavBarCustom extends StatelessWidget {
@@ -16,31 +18,44 @@ class BotNavBarCustom extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4CAF50).withAlpha(26),
-            blurRadius: 12,
-            spreadRadius: 3,
-          ),
-        ],
+        color: Colors.transparent,
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.transparent,
+        //     // offset: Offset(0, 4),
+        //     // blurRadius: 12,
+        //     // spreadRadius: 3,
+        //   ),
+        // ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: onTabTapped,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedFontSize: 12,
-          unselectedFontSize: 11,
-          iconSize: 26,
-          elevation: 0,
-          items: [
-            _buildNavItem(Icons.home, 'Beranda', 0),
-            _buildNavItem(Icons.sensors, 'Sensor', 1),
-            _buildNavItem(Icons.touch_app, 'Kontrol', 2),
-            _buildNavItem(Icons.analytics, 'Analisis', 3),
-          ],
+
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.transparent, // Lebih transparan
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.5),
+              width: 1.0,
+            ),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: currentIndex,
+            onTap: onTabTapped,
+            type: BottomNavigationBarType.fixed,
+            // backgroundColor: Colors.white.withOpacity(0.6),
+            selectedFontSize: 12,
+            unselectedFontSize: 11,
+            iconSize: 26,
+            elevation: 0,
+            items: [
+              _buildNavItem(Icons.home, 'Beranda', 0),
+              _buildNavItem(Icons.sensors, 'Sensor', 1),
+              _buildNavItem(Icons.touch_app, 'Kontrol', 2),
+              _buildNavItem(Icons.analytics, 'Analisis', 3),
+            ],
+          ),
         ),
       ),
     );
